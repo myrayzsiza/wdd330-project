@@ -12,6 +12,31 @@ class TravelPlanner {
         this.currentLocation = null;
         this.favorites = this.loadFavorites();
         
+        // Popular destinations for suggestions
+        this.destinations = [
+            { name: 'Paris', icon: '🇫🇷' },
+            { name: 'London', icon: '🇬🇧' },
+            { name: 'Tokyo', icon: '🇯🇵' },
+            { name: 'New York', icon: '🇺🇸' },
+            { name: 'Barcelona', icon: '🇪🇸' },
+            { name: 'Rome', icon: '🇮🇹' },
+            { name: 'Dubai', icon: '🇦🇪' },
+            { name: 'Sydney', icon: '🇦🇺' },
+            { name: 'Amsterdam', icon: '🇳🇱' },
+            { name: 'Bangkok', icon: '🇹🇭' },
+            { name: 'Singapore', icon: '🇸🇬' },
+            { name: 'Berlin', icon: '🇩🇪' },
+            { name: 'Vienna', icon: '🇦🇹' },
+            { name: 'Prague', icon: '🇨🇿' },
+            { name: 'Istanbul', icon: '🇹🇷' },
+            { name: 'Canada', icon: '🇨🇦' },
+            { name: 'Mexico', icon: '🇲🇽' },
+            { name: 'Brazil', icon: '🇧🇷' },
+            { name: 'Peru', icon: '🇵🇪' },
+            { name: 'Greece', icon: '🇬🇷' }
+        ];
+        this.currentSuggestionIndex = -1;
+        
         this.initializeEventListeners();
         this.displayFavorites();
     }
@@ -27,6 +52,17 @@ class TravelPlanner {
         searchBtn.addEventListener('click', () => this.handleSearch());
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.handleSearch();
+        });
+        
+        // Search suggestions
+        searchInput.addEventListener('input', (e) => this.handleSuggestionInput(e));
+        searchInput.addEventListener('keydown', (e) => this.handleSuggestionKeydown(e));
+        
+        // Close suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-input-wrapper')) {
+                this.closeSuggestions();
+            }
         });
 
         // Filter buttons
@@ -216,6 +252,123 @@ class TravelPlanner {
         ];
 
         return attractions;
+    }
+
+    /**
+     * Handle search input for suggestions
+     */
+    handleSuggestionInput(e) {
+        const query = e.target.value.trim().toLowerCase();
+        const suggestionsList = document.getElementById('suggestions-list');
+        
+        if (!query) {
+            this.closeSuggestions();
+            return;
+        }
+        
+        // Filter destinations that match the query
+        const matches = this.destinations.filter(dest => 
+            dest.name.toLowerCase().startsWith(query)
+        );
+        
+        if (matches.length === 0) {
+            this.closeSuggestions();
+            return;
+        }
+        
+        // Display suggestions
+        this.displaySuggestions(matches);
+    }
+
+    /**
+     * Display suggestions in the dropdown
+     */
+    displaySuggestions(matches) {
+        const suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.innerHTML = '';
+        this.currentSuggestionIndex = -1;
+        
+        matches.forEach(destination => {
+            const li = document.createElement('li');
+            li.className = 'suggestion-item';
+            li.innerHTML = `<i class="fas fa-map-pin"></i><span>${destination.name}</span>`;
+            
+            li.addEventListener('click', () => {
+                this.selectSuggestion(destination.name);
+            });
+            
+            suggestionsList.appendChild(li);
+        });
+        
+        suggestionsList.style.display = 'block';
+    }
+
+    /**
+     * Handle keyboard navigation in suggestions
+     */
+    handleSuggestionKeydown(e) {
+        const suggestionsList = document.getElementById('suggestions-list');
+        const items = suggestionsList.querySelectorAll('.suggestion-item');
+        
+        if (items.length === 0) return;
+        
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                this.currentSuggestionIndex = Math.min(
+                    this.currentSuggestionIndex + 1, 
+                    items.length - 1
+                );
+                this.updateSuggestionHighlight(items);
+                break;
+                
+            case 'ArrowUp':
+                e.preventDefault();
+                this.currentSuggestionIndex = Math.max(
+                    this.currentSuggestionIndex - 1, 
+                    -1
+                );
+                this.updateSuggestionHighlight(items);
+                break;
+                
+            case 'Enter':
+                if (this.currentSuggestionIndex >= 0 && items[this.currentSuggestionIndex]) {
+                    e.preventDefault();
+                    const selectedText = items[this.currentSuggestionIndex].querySelector('span').textContent;
+                    this.selectSuggestion(selectedText);
+                }
+                break;
+                
+            case 'Escape':
+                this.closeSuggestions();
+                break;
+        }
+    }
+
+    /**
+     * Update the highlighted suggestion
+     */
+    updateSuggestionHighlight(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('active', index === this.currentSuggestionIndex);
+        });
+    }
+
+    /**
+     * Select a suggestion
+     */
+    selectSuggestion(destination) {
+        document.getElementById('search-input').value = destination;
+        this.closeSuggestions();
+    }
+
+    /**
+     * Close suggestions dropdown
+     */
+    closeSuggestions() {
+        const suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.style.display = 'none';
+        this.currentSuggestionIndex = -1;
     }
 
     /**

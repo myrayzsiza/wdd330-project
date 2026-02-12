@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Planner - Explore the World</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -42,12 +43,18 @@
                         <h1>Travel Planner</h1>
                     </div>
                     <div class="search-box-header">
-                        <input 
-                            type="text" 
-                            id="search-input" 
-                            placeholder="Search for a city or country..." 
-                            aria-label="Search for destination"
-                        >
+                        <div class="search-input-wrapper">
+                            <input 
+                                type="text" 
+                                id="search-input" 
+                                placeholder="Search for a city or country..." 
+                                aria-label="Search for destination"
+                                autocomplete="off"
+                            >
+                            <ul id="suggestions-list" class="suggestions-list" style="display: none;">
+                                <!-- Suggestions populated by JavaScript -->
+                            </ul>
+                        </div>
                         <button id="search-btn" class="btn-search">
                             <i class="fas fa-search"></i>
                         </button>
