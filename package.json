@@ -1,0 +1,23 @@
+{
+  "name": "travel-planner",
+  "version": "1.0.0",
+  "description": "A web application for planning travel destinations with search, filtering, and favorites",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo 'Build complete'",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "travel",
+    "planning",
+    "destinations",
+    "tourism"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "engines": {
+    "node": "22.22.0"
+  }
+}
