@@ -1,0 +1,179 @@
+{
+  "favorites": [
+    {
+      "id": 1,
+      "name": "Eiffel Tower",
+      "type": "attraction",
+      "location": "Paris",
+      "rating": 4.7,
+      "reviews": 2341,
+      "description": "Iconic iron lattice structure with panoramic city views",
+      "address": "5 Avenue Anatole France, 75007 Paris, France",
+      "savedDate": "2024-01-15",
+      "notes": "Best visited at sunset",
+      "visited": false,
+      "visitDate": null
+    },
+    {
+      "id": 2,
+      "name": "Big Ben & Houses of Parliament",
+      "type": "attraction",
+      "location": "London",
+      "rating": 4.6,
+      "reviews": 1897,
+      "description": "Historic Gothic Revival palace housing the UK Parliament",
+      "address": "Palace of Westminster, Westminster, London SW1A 0AA, UK",
+      "savedDate": "2024-01-10",
+      "notes": "Great guided tours available",
+      "visited": false,
+      "visitDate": null
+    },
+    {
+      "id": 3,
+      "name": "The London Hotel",
+      "type": "hotel",
+      "location": "London",
+      "rating": 4.5,
+      "reviews": 523,
+      "description": "Luxury 5-star hotel near Westminster Abbey",
+      "address": "10 Spring Gardens, London SW1A 2BN, UK",
+      "price": "$280/night",
+      "savedDate": "2024-01-12",
+      "notes": "Book 3+ months in advance",
+      "visited": false,
+      "visitDate": null
+    },
+    {
+      "id": 4,
+      "name": "Restaurant L'Astrance",
+      "type": "restaurant",
+      "location": "Paris",
+      "rating": 4.8,
+      "reviews": 687,
+      "description": "Michelin-starred French fine dining restaurant",
+      "address": "4 Rue Beethoven, 75016 Paris, France",
+      "price": "$150-250 per person",
+      "savedDate": "2024-01-18",
+      "notes": "Reservation required, advance booking recommended",
+      "visited": false,
+      "visitDate": null
+    },
+    {
+      "id": 5,
+      "name": "Central Park",
+      "type": "park",
+      "location": "New York",
+      "rating": 4.8,
+      "reviews": 3456,
+      "description": "Large urban park with trails, lake, and scenic views",
+      "address": "New York, NY 10024, USA",
+      "savedDate": "2024-01-20",
+      "notes": "Best to visit in spring or fall",
+      "visited": false,
+      "visitDate": null
+    }
+  ],
+  "trips": [
+    {
+      "id": 101,
+      "name": "Paris & London Adventure",
+      "location": "Paris, France → London, UK",
+      "startDate": "2024-06-15",
+      "endDate": "2024-06-29",
+      "days": 14,
+      "budget": 5000,
+      "status": "planned",
+      "items": [
+        {
+          "day": 1,
+          "place": "Eiffel Tower",
+          "type": "attraction",
+          "time": "Afternoon"
+        },
+        {
+          "day": 2,
+          "place": "Restaurant L'Astrance",
+          "type": "restaurant",
+          "time": "Evening"
+        },
+        {
+          "day": 5,
+          "place": "Big Ben & Houses of Parliament",
+          "type": "attraction",
+          "time": "Morning"
+        },
+        {
+          "day": 7,
+          "place": "The London Hotel",
+          "type": "hotel",
+          "time": "Check-in"
+        }
+      ],
+      "notes": "Romantic getaway with focus on historic sites and fine dining",
+      "created": "2024-01-20"
+    },
+    {
+      "id": 102,
+      "name": "New York City Week",
+      "location": "New York, USA",
+      "startDate": "2024-07-10",
+      "endDate": "2024-07-17",
+      "days": 7,
+      "budget": 3000,
+      "status": "planning",
+      "items": [
+        {
+          "day": 1,
+          "place": "Central Park",
+          "type": "park",
+          "time": "Morning walk"
+        }
+      ],
+      "notes": "Urban exploration with focus on parks and museums",
+      "created": "2024-01-20"
+    }
+  ],
+  "savedSearches": [
+    {
+      "id": "search_1",
+      "query": "Paris museums",
+      "filters": {
+        "type": "museum",
+        "minRating": 4.5
+      },
+      "resultCount": 12,
+      "savedDate": "2024-01-15"
+    },
+    {
+      "id": "search_2",
+      "query": "London budget hotels",
+      "filters": {
+        "type": "hotel",
+        "maxPrice": 150
+      },
+      "resultCount": 24,
+      "savedDate": "2024-01-18"
+    }
+  ],
+  "travelHistory": [
+    {
+      "id": "trip_1",
+      "location": "Barcelona, Spain",
+      "startDate": "2023-09-01",
+      "endDate": "2023-09-07",
+      "rating": 5,
+      "review": "Amazing food, great architecture, and wonderful people!",
+      "photos": 145
+    },
+    {
+      "id": "trip_2",
+      "location": "Tokyo, Japan",
+      "startDate": "2023-04-15",
+      "endDate": "2023-04-28",
+      "rating": 5,
+      "review": "Incredible blend of tradition and modernity",
+      "photos": 287
+    }
+  ],
+  "notes": "Travel Planner Favorites Template - Update with your own favorite destinations and trips. Stored locally in browser localStorage."
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner - Explore the World</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-compass"></i>
+                <h1>Travel Planner</h1>
+            </div>
+            <nav class="nav">
+                <a href="#home" class="nav-link active" data-section="home">Home</a>
+                <a href="#favorites" class="nav-link" data-section="favorites">My Trips</a>
+                <a href="#about" class="nav-link" data-section="about">About</a>
+            </nav>
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Section -->
+        <section id="home-section" class="section active">
+            <!-- Hero Search Section -->
+            <div class="hero">
+                <div class="hero-content">
+                    <h2>Discover Your Next Adventure</h2>
+                    <p>Explore attractions, hotels, and create your perfect itinerary</p>
+                    
+                    <div class="search-box">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="Search city or country..." 
+                            aria-label="Search for destination"
+                        >
+                        <button id="search-btn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </div>
+
+                    <!-- Filter Options -->
+                    <div class="filter-section">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="attraction">
+                            <i class="fas fa-landmark"></i> Attractions
+                        </button>
+                        <button class="filter-btn" data-filter="hotel">
+                            <i class="fas fa-h-square"></i> Hotels
+                        </button>
+                        <button class="filter-btn" data-filter="restaurant">
+                            <i class="fas fa-utensils"></i> Restaurants
+                        </button>
+                        <button class="filter-btn" data-filter="museum">
+                            <i class="fas fa-museum"></i> Museums
+                        </button>
+                        <button class="filter-btn" data-filter="park">
+                            <i class="fas fa-tree"></i> Parks
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-container">
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Searching for amazing places...</p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;"></div>
+
+                <!-- Results Grid -->
+                <div id="results-grid" class="results-grid">
+                    <!-- Results populated by JavaScript -->
+                </div>
+
+                <!-- No Results Message -->
+                <div id="no-results" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <p>No results found. Try searching for another destination!</p>
+                </div>
+            </div>
+
+            <!-- Map Section -->
+            <section id="map-section" class="map-section" style="display: none;">
+                <div class="container">
+                    <h3>Location Map</h3>
+                    <div id="map" style="height: 500px; border-radius: 8px; overflow: hidden;"></div>
+                </div>
+            </section>
+
+            <!-- Trip Itinerary Builder -->
+            <section id="itinerary-section" class="itinerary-section" style="display: none;">
+                <div class="container">
+                    <h3>Build Your Itinerary</h3>
+                    <div class="itinerary-builder">
+                        <div id="selected-items" class="selected-items">
+                            <!-- Selected items appear here -->
+                        </div>
+                        <button id="create-itinerary-btn" class="btn btn-success">
+                            <i class="fas fa-calendar"></i> Create Itinerary
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- Favorites Section -->
+        <section id="favorites-section" class="section">
+            <div class="container">
+                <h2>My Favorite Trips</h2>
+                <div id="favorites-list" class="favorites-list">
+                    <!-- Saved favorites populated by JavaScript -->
+                </div>
+                <div id="no-favorites" class="no-results" style="display: none;">
+                    <i class="fas fa-bookmark"></i>
+                    <p>No saved trips yet. Start saving your favorite places!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about-section" class="section">
+            <div class="container">
+                <h2>About Travel Planner</h2>
+                <div class="about-content">
+                    <div class="about-card">
+                        <i class="fas fa-compass"></i>
+                        <h4>Explore</h4>
+                        <p>Discover attractions, hotels, and restaurants worldwide with real reviews and ratings.</p>
+                    </div>
+                    <div class="about-card">
+                        <i class="fas fa-map"></i>
+                        <h4>Navigate</h4>
+                        <p>Get directions and view interactive maps to plan your routes perfectly.</p>
+                    </div>
+                    <div class="about-card">
+                        <i class="fas fa-bookmark"></i>
+                        <h4>Save</h4>
+                        <p>Save your favorite destinations and create custom itineraries for your trips.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Place Details -->
+    <div id="detail-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Travel Planner. Built with <i class="fas fa-heart"></i> for wanderers.</p>
+            <p>
+                <a href="#" class="footer-link">Privacy Policy</a> | 
+                <a href="#" class="footer-link">Terms of Service</a> | 
+                <a href="#" class="footer-link">Contact</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="map.js"></script>
+    <script src="app.js"></script>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+</body>
+</html>
