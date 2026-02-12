@@ -40,8 +40,8 @@ const server = http.createServer((req, res) => {
     pathname = '/index.html';
   }
   
-  // Build file path - serve from travel-planner directory
-  const filePath = path.join(__dirname, 'travel-planner', pathname);
+  // Build file path - serve from root directory
+  const filePath = path.join(__dirname, pathname);
   
   // Get file extension
   const ext = path.extname(filePath).toLowerCase();
