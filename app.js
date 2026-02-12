@@ -35,8 +35,8 @@ class TravelPlanner {
             btn.addEventListener('click', (e) => this.handleFilter(e));
         });
 
-        // Navigation
-        const navLinks = document.querySelectorAll('.nav-link');
+        // Navigation - handle both sidebar and bottom nav
+        const navLinks = document.querySelectorAll('.sidebar-link, .nav-bottom-link');
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => this.handleNavigation(e));
         });
@@ -512,15 +512,16 @@ class TravelPlanner {
      * Handle navigation between sections
      */
     handleNavigation(e) {
-        e.preventDefault();
+        const target = e.target.closest('.sidebar-link, .nav-bottom-link');
+        if (!target) return;
         
-        const section = e.target.dataset.section;
+        const section = target.dataset.section;
         
         // Update active nav link
-        document.querySelectorAll('.nav-link').forEach(link => {
+        document.querySelectorAll('.sidebar-link, .nav-bottom-link').forEach(link => {
             link.classList.remove('active');
         });
-        e.target.classList.add('active');
+        target.classList.add('active');
 
         // Hide all sections
         document.querySelectorAll('.section').forEach(section => {
@@ -528,7 +529,7 @@ class TravelPlanner {
         });
 
         // Show selected section
-        const sectionId = `${section}-section`;
+        const sectionId = section === 'map' ? 'map-fullview-section' : `${section}-section`;
         const sectionElement = document.getElementById(sectionId);
         if (sectionElement) {
             sectionElement.classList.add('active');
@@ -608,13 +609,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check for saved theme preference
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
-        document.querySelector('#theme-toggle i').classList.add('fa-sun');
-        document.querySelector('#theme-toggle i').classList.remove('fa-moon');
     }
 
     // Set active home section
     document.getElementById('home-section').classList.add('active');
-    document.querySelector('.nav-link[data-section="home"]').classList.add('active');
+    document.querySelector('.sidebar-link[data-section="home"]')?.classList.add('active');
+    document.querySelector('.nav-bottom-link[data-section="home"]')?.classList.add('active');
 
     console.log('Travel Planner App Initialized');
 });
