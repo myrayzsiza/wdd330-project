@@ -11,6 +11,8 @@ class TravelPlanner {
         this.currentFilter = 'all';
         this.currentLocation = null;
         this.favorites = this.loadFavorites();
+        this.favoriteTrips = this.loadFavoriteTrips();
+        this.currentTrip = null;
         
         // Popular destinations for suggestions
         this.destinations = [
@@ -537,10 +539,10 @@ class TravelPlanner {
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <button class="btn btn-primary" onclick="travelPlanner.toggleFavorite(${placeId}, '${place.name}')">
-                    <i class="fas fa-heart"></i> Add to Favorites
+                    <i class="fas fa-heart"></i> Save to Trip
                 </button>
                 <button class="btn btn-success" onclick="travelPlanner.addToItinerary(${placeId}, '${place.name}')">
-                    <i class="fas fa-calendar"></i> Add to Trip
+                    <i class="fas fa-calendar"></i> Add to Itinerary
                 </button>
                 <button class="btn btn-secondary" onclick="document.getElementById('detail-modal').style.display='none'">
                     Close
@@ -560,24 +562,128 @@ class TravelPlanner {
 
         const index = this.favorites.findIndex(f => f.id === placeId);
         if (index === -1) {
-            // Add to favorites
-            this.favorites.push({
+            // Show modal to save to trip
+            this.showSaveToTripModal(place);
+        } else {
+            // Remove from favorites
+            this.favorites.splice(index, 1);
+            alert(`Removed "${place.name}" from favorites!`);
+            this.saveFavorites();
+            this.displayFavorites();
+        }
+    }
+
+    /**
+     * Show modal to save place to a trip
+     */
+    showSaveToTripModal(place) {
+        const trips = this.favoriteTrips;
+        
+        let content = `
+            <div style="padding: 20px;">
+                <h3 style="margin-bottom: 20px;">Save to Trip</h3>
+                <p style="margin-bottom: 20px; color: #666;">Select a trip to save <strong>"${place.name}"</strong></p>
+        `;
+
+        if (trips.length > 0) {
+            content += '<div style="margin-bottom: 20px;"><strong>Existing Trips:</strong></div>';
+            content += '<div style="margin-bottom: 15px;">';
+            trips.forEach(trip => {
+                content += `
+                    <button onclick="travelPlanner.savePlaceToTrip(${place.id}, '${place.name}', '${trip.id}')" 
+                            style="display: block; width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                        ✈️ ${trip.name} (${trip.places.length} places)
+                    </button>
+                `;
+            });
+            content += '</div>';
+        }
+
+        content += `
+            <div style="margin-bottom: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <strong>Create New Trip:</strong>
+            </div>
+            <input type="text" id="new-trip-name" placeholder="Enter trip name (e.g., Summer 2024)" 
+                   style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px;">
+            <button onclick="travelPlanner.createAndSaveTrip(${place.id}, '${place.name}')" 
+                    style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                <i class="fas fa-plus"></i> Create Trip & Save
+            </button>
+        `;
+
+        const modal = document.getElementById('detail-modal');
+        const modalBody = document.getElementById('modal-body');
+        modalBody.innerHTML = content;
+        modal.style.display = 'flex';
+    }
+
+    /**
+     * Save place to existing trip
+     */
+    savePlaceToTrip(placeId, placeName, tripId) {
+        const place = this.allResults.find(p => p.id === placeId);
+        if (!place) return;
+
+        const trip = this.favoriteTrips.find(t => t.id === tripId);
+        if (!trip) return;
+
+        // Check if already in trip
+        if (trip.places.some(p => p.id === placeId)) {
+            alert(`"${placeName}" is already in this trip!`);
+            return;
+        }
+
+        trip.places.push({
+            id: placeId,
+            name: place.name,
+            type: place.type,
+            description: place.description,
+            rating: place.rating,
+            price: place.price,
+            addedDate: new Date().toLocaleDateString()
+        });
+
+        this.saveFavoriteTrips();
+        this.displayFavorites();
+        alert(`Added "${placeName}" to "${trip.name}"!`);
+        document.getElementById('detail-modal').style.display = 'none';
+    }
+
+    /**
+     * Create new trip and save place
+     */
+    createAndSaveTrip(placeId, placeName) {
+        const tripNameInput = document.getElementById('new-trip-name');
+        const tripName = tripNameInput.value.trim();
+
+        if (!tripName) {
+            alert('Please enter a trip name');
+            return;
+        }
+
+        const place = this.allResults.find(p => p.id === placeId);
+        if (!place) return;
+
+        const newTrip = {
+            id: 'trip_' + Date.now(),
+            name: tripName,
+            createdDate: new Date().toLocaleDateString(),
+            places: [{
                 id: placeId,
                 name: place.name,
                 type: place.type,
                 description: place.description,
                 rating: place.rating,
-                savedDate: new Date().toLocaleDateString()
-            });
-            alert(`Added "${place.name}" to favorites!`);
-        } else {
-            // Remove from favorites
-            this.favorites.splice(index, 1);
-            alert(`Removed "${place.name}" from favorites!`);
-        }
+                price: place.price,
+                addedDate: new Date().toLocaleDateString()
+            }]
+        };
 
-        this.saveFavorites();
+        this.favoriteTrips.push(newTrip);
+        this.saveFavoriteTrips();
         this.displayFavorites();
+        alert(`Created "${tripName}" and added "${placeName}"!`);
+        document.getElementById('detail-modal').style.display = 'none';
     }
 
     /**
@@ -688,13 +794,37 @@ class TravelPlanner {
     }
 
     /**
+     * Load favorite trips from localStorage
+     */
+    loadFavoriteTrips() {
+        try {
+            const stored = localStorage.getItem('travelPlannerFavoriteTrips');
+            return stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading favorite trips:', e);
+            return [];
+        }
+    }
+
+    /**
+     * Save favorite trips to localStorage
+     */
+    saveFavoriteTrips() {
+        try {
+            localStorage.setItem('travelPlannerFavoriteTrips', JSON.stringify(this.favoriteTrips));
+        } catch (e) {
+            console.error('Error saving favorite trips:', e);
+        }
+    }
+
+    /**
      * Display saved favorites
      */
     displayFavorites() {
         const favoritesList = document.getElementById('favorites-list');
         const noFavorites = document.getElementById('no-favorites');
 
-        if (this.favorites.length === 0) {
+        if (this.favoriteTrips.length === 0) {
             favoritesList.innerHTML = '';
             noFavorites.style.display = 'block';
             return;
@@ -702,27 +832,67 @@ class TravelPlanner {
 
         noFavorites.style.display = 'none';
 
-        favoritesList.innerHTML = this.favorites.map(fav => `
-            <div class="favorite-card">
-                <h4>${fav.name}</h4>
-                <p><strong>Type:</strong> ${fav.type}</p>
-                <p><strong>Rating:</strong> ${fav.rating} ⭐</p>
-                <p><strong>Saved:</strong> ${fav.savedDate}</p>
-                <p>${fav.description}</p>
-                <button class="btn btn-secondary btn-sm" onclick="travelPlanner.removeFavorite(${fav.id})">
-                    <i class="fas fa-trash"></i> Remove
-                </button>
+        const tripsHTML = this.favoriteTrips.map(trip => `
+            <div style="margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="margin: 0 0 5px 0;">✈️ ${trip.name}</h3>
+                        <p style="margin: 0; color: #666; font-size: 0.9rem;">Created: ${trip.createdDate} • ${trip.places.length} places</p>
+                    </div>
+                    <button onclick="travelPlanner.deleteTrip('${trip.id}')" 
+                            style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div style="border-top: 1px solid #ddd; padding-top: 15px;">
+                    ${trip.places.map((place, idx) => `
+                        <div style="padding: 12px; background: white; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: bold;">${place.name}</div>
+                                <div style="color: #666; font-size: 0.9rem;">${place.type} • Rating: ${place.rating} ⭐ • ${place.price}</div>
+                            </div>
+                            <button onclick="travelPlanner.removePlaceFromTrip('${trip.id}', ${place.id})" 
+                                    style="background: #f8f9fa; border: 1px solid #ddd; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         `).join('');
+
+        favoritesList.innerHTML = tripsHTML;
     }
 
     /**
-     * Remove favorite by ID
+     * Delete a favorite trip
      */
-    removeFavorite(favId) {
-        this.favorites = this.favorites.filter(f => f.id !== favId);
-        this.saveFavorites();
+    deleteTrip(tripId) {
+        if (!confirm('Are you sure you want to delete this trip and all its places?')) {
+            return;
+        }
+
+        this.favoriteTrips = this.favoriteTrips.filter(t => t.id !== tripId);
+        this.saveFavoriteTrips();
         this.displayFavorites();
+    }
+
+    /**
+     * Remove place from trip
+     */
+    removePlaceFromTrip(tripId, placeId) {
+        const trip = this.favoriteTrips.find(t => t.id === tripId);
+        if (!trip) return;
+
+        trip.places = trip.places.filter(p => p.id !== placeId);
+        
+        // Delete trip if empty
+        if (trip.places.length === 0) {
+            this.deleteTrip(tripId);
+        } else {
+            this.saveFavoriteTrips();
+            this.displayFavorites();
+        }
     }
 
     /**
