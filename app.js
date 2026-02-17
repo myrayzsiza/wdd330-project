@@ -693,9 +693,13 @@ class TravelPlanner {
             sectionElement.classList.add('active');
         }
 
-        // Display travel guide if guide section is selected
+        // Display specific content when section is selected
         if (section === 'guide' && this.currentLocation) {
             travelGuide.displayGuide(this.currentLocation);
+        } else if (section === 'explore') {
+            this.displayExplore();
+        } else if (section === 'reviews') {
+            this.displayReviews();
         }
     }
 
@@ -746,6 +750,285 @@ class TravelPlanner {
         if (itinerarySection) {
             itinerarySection.style.display = 'block';
         }
+    }
+
+    /**
+     * Display Explore Page
+     */
+    displayExplore() {
+        // Display most traveled destinations
+        const mostTravelledGrid = document.getElementById('most-traveled-grid');
+        const mostTravelledData = this.getMostTravelledDestinations();
+        mostTravelledGrid.innerHTML = mostTravelledData.map(dest => `
+            <div class="destination-card">
+                <div class="destination-card-image">${dest.emoji}</div>
+                <div class="destination-card-content">
+                    <div class="destination-card-title">${dest.name}</div>
+                    <div class="destination-card-stats">
+                        <div class="destination-card-stat">
+                            <span class="destination-card-stat-value">${dest.visitors}</span>
+                            <span>Visitors</span>
+                        </div>
+                        <div class="destination-card-stat">
+                            <span class="destination-card-stat-value">${dest.rating}</span>
+                            <span>Rating</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Display trending destinations
+        const trendingGrid = document.getElementById('trending-grid');
+        const trendingData = this.getTrendingDestinations();
+        trendingGrid.innerHTML = trendingData.map(dest => `
+            <div class="destination-card">
+                <div class="destination-card-image">${dest.emoji}</div>
+                <div class="destination-card-content">
+                    <div class="destination-card-title">${dest.name}</div>
+                    <div class="destination-card-stats">
+                        <div class="destination-card-stat">
+                            <span class="destination-card-stat-value">${dest.trend}</span>
+                            <span>${dest.trendLabel}</span>
+                        </div>
+                        <div class="destination-card-stat">
+                            <span class="destination-card-stat-value">${dest.rating}</span>
+                            <span>Rating</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Display categories
+        const categoryGrid = document.getElementById('category-grid');
+        const categories = this.getCategories();
+        categoryGrid.innerHTML = categories.map(cat => `
+            <div class="category-card" onclick="alert('Browse ${cat.name} category')">
+                <i class="${cat.icon}"></i>
+                <div class="category-card-name">${cat.name}</div>
+            </div>
+        `).join('');
+
+        // Display collections
+        const collectionsGrid = document.getElementById('collections-grid');
+        const collections = this.getCollections();
+        collectionsGrid.innerHTML = collections.map(col => `
+            <div class="collection-card">
+                <div class="collection-card-header">
+                    <i class="${col.icon}"></i>
+                    <div class="collection-card-title">${col.title}</div>
+                </div>
+                <div class="collection-card-body">
+                    <div class="collection-card-description">${col.description}</div>
+                    <div class="collection-card-count">${col.count} destinations</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    /**
+     * Display Reviews Page
+     */
+    displayReviews() {
+        // Display reviews list
+        const reviewsList = document.getElementById('reviews-list');
+        const reviews = this.getReviews();
+        reviewsList.innerHTML = reviews.map(review => `
+            <div class="review-item">
+                <div class="review-header">
+                    <div>
+                        <div class="review-author">${review.author}</div>
+                        <div class="review-destination">Visited: ${review.destination}</div>
+                    </div>
+                    <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                </div>
+                <div class="review-text">"${review.text}"</div>
+                <div class="review-footer">
+                    <span>${review.date}</span>
+                    <div class="review-helpful">
+                        <button class="review-helpful-btn"><i class="fas fa-thumbs-up"></i> ${review.helpful}</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Display top rated destinations
+        const topRatedList = document.getElementById('top-rated-list');
+        const topRated = this.getTopRatedDestinations();
+        topRatedList.innerHTML = topRated.map((dest, index) => `
+            <div class="top-rated-item">
+                <div class="top-rated-rank">#${index + 1}</div>
+                <div class="top-rated-name">${dest.name}</div>
+                <div class="top-rated-rating">${'★'.repeat(5)}${dest.rating}/5.0</div>
+                <div class="top-rated-reviews">${dest.reviews} reviews</div>
+            </div>
+        `).join('');
+
+        // Add filter button listeners
+        const filterBtns = document.querySelectorAll('.review-filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // Filter reviews based on rating
+                console.log('Filter by:', btn.dataset.filter);
+            });
+        });
+    }
+
+    /**
+     * Get most traveled destinations data
+     */
+    getMostTravelledDestinations() {
+        return [
+            { name: 'Paris', emoji: '🇫🇷', visitors: '8.5M', rating: '4.8' },
+            { name: 'Tokyo', emoji: '🇯🇵', visitors: '7.2M', rating: '4.7' },
+            { name: 'London', emoji: '🇬🇧', visitors: '6.9M', rating: '4.6' },
+            { name: 'Dubai', emoji: '🇦🇪', visitors: '6.2M', rating: '4.9' },
+            { name: 'New York', emoji: '🇺🇸', visitors: '5.8M', rating: '4.5' },
+            { name: 'Barcelona', emoji: '🇪🇸', visitors: '5.4M', rating: '4.7' },
+            { name: 'Rome', emoji: '🇮🇹', visitors: '5.1M', rating: '4.8' },
+            { name: 'Sydney', emoji: '🇦🇺', visitors: '4.8M', rating: '4.6' }
+        ];
+    }
+
+    /**
+     * Get trending destinations data
+     */
+    getTrendingDestinations() {
+        return [
+            { name: 'Istanbul', emoji: '🇹🇷', trend: '+45%', trendLabel: 'trending', rating: '4.5' },
+            { name: 'Bangkok', emoji: '🇹🇭', trend: '+38%', trendLabel: 'trending', rating: '4.4' },
+            { name: 'Singapore', emoji: '🇸🇬', trend: '+32%', trendLabel: 'trending', rating: '4.7' },
+            { name: 'Amsterdam', emoji: '🇳🇱', trend: '+28%', trendLabel: 'trending', rating: '4.6' },
+            { name: 'Bali', emoji: '🌴', trend: '+25%', trendLabel: 'trending', rating: '4.5' },
+            { name: 'Prague', emoji: '🇨🇿', trend: '+22%', trendLabel: 'trending', rating: '4.5' }
+        ];
+    }
+
+    /**
+     * Get category data
+     */
+    getCategories() {
+        return [
+            { name: 'Adventure', icon: 'fas fa-hiking' },
+            { name: 'Culture', icon: 'fas fa-landmark' },
+            { name: 'Beach', icon: 'fas fa-umbrella-beach' },
+            { name: 'Mountains', icon: 'fas fa-mountain' },
+            { name: 'Food', icon: 'fas fa-utensils' },
+            { name: 'Nature', icon: 'fas fa-leaf' },
+            { name: 'History', icon: 'fas fa-book' },
+            { name: 'Urban', icon: 'fas fa-building' }
+        ];
+    }
+
+    /**
+     * Get featured collections data
+     */
+    getCollections() {
+        return [
+            {
+                title: 'Hidden Gems',
+                icon: 'fas fa-star',
+                description: 'Discover lesser-known destinations with unique charm and character.',
+                count: 42
+            },
+            {
+                title: 'Family Friendly',
+                icon: 'fas fa-people-group',
+                description: 'Perfect destinations for traveling with kids and families.',
+                count: 38
+            },
+            {
+                title: 'Weekend Escapes',
+                icon: 'fas fa-calendar-days',
+                description: 'Quick getaways perfect for 2-3 day trips.',
+                count: 56
+            },
+            {
+                title: 'Luxury Travel',
+                icon: 'fas fa-crown',
+                description: 'High-end destinations and exclusive experiences.',
+                count: 29
+            },
+            {
+                title: 'Budget Adventures',
+                icon: 'fas fa-coins',
+                description: 'Amazing destinations that won\'t break the bank.',
+                count: 67
+            },
+            {
+                title: 'Road Trips',
+                icon: 'fas fa-road',
+                description: 'Scenic routes and destinations perfect for driving.',
+                count: 33
+            }
+        ];
+    }
+
+    /**
+     * Get reviews data
+     */
+    getReviews() {
+        return [
+            {
+                author: 'Sarah M.',
+                destination: 'Paris, France',
+                rating: 5,
+                text: 'Absolutely magical! The Eiffel Tower, the museums, the food - everything exceeded expectations. Will definitely return!',
+                date: '2 weeks ago',
+                helpful: 342
+            },
+            {
+                author: 'John D.',
+                destination: 'Tokyo, Japan',
+                rating: 5,
+                text: 'Tokyo is an incredible blend of ancient traditions and cutting-edge modern culture. The hospitality is outstanding.',
+                date: '3 weeks ago',
+                helpful: 289
+            },
+            {
+                author: 'Emma L.',
+                destination: 'Barcelona, Spain',
+                rating: 4,
+                text: 'Beautiful city with great architecture and beaches. A bit crowded during peak season but still worth visiting.',
+                date: '1 month ago',
+                helpful: 215
+            },
+            {
+                author: 'Michael R.',
+                destination: 'New York, USA',
+                rating: 4,
+                text: 'The city that never sleeps! Incredible food, entertainment, and endless things to do. Can get expensive quickly.',
+                date: '1 month ago',
+                helpful: 198
+            },
+            {
+                author: 'Lisa K.',
+                destination: 'Dubai, UAE',
+                rating: 5,
+                text: 'Stunning modern architecture, perfect weather, and world-class shopping. Every moment feels luxurious.',
+                date: '5 weeks ago',
+                helpful: 276
+            }
+        ];
+    }
+
+    /**
+     * Get top rated destinations
+     */
+    getTopRatedDestinations() {
+        return [
+            { name: 'Dubai', rating: '4.9', reviews: 1245 },
+            { name: 'Paris', rating: '4.8', reviews: 2341 },
+            { name: 'Rome', rating: '4.8', reviews: 1876 },
+            { name: 'Tokyo', rating: '4.7', reviews: 1654 },
+            { name: 'Barcelona', rating: '4.7', reviews: 1423 },
+            { name: 'Amsterdam', rating: '4.6', reviews: 1089 },
+            { name: 'London', rating: '4.6', reviews: 1934 },
+            { name: 'Sydney', rating: '4.6', reviews: 987 }
+        ];
     }
 
     /**

@@ -26,6 +26,14 @@
                     <i class="fas fa-map-location-dot"></i>
                     <span>Map</span>
                 </button>
+                <button class="sidebar-link" data-section="explore">
+                    <i class="fas fa-compass"></i>
+                    <span>Explore</span>
+                </button>
+                <button class="sidebar-link" data-section="reviews">
+                    <i class="fas fa-star"></i>
+                    <span>Reviews</span>
+                </button>
                 <button class="sidebar-link" data-section="guide">
                     <i class="fas fa-book"></i>
                     <span>Travel Guide</span>
@@ -167,6 +175,88 @@
                 <div id="map-fullview" style="height: 600px; border-radius: 8px; overflow: hidden; margin-bottom: 2rem;"></div>
             </section>
 
+            <!-- Explore Section -->
+            <section id="explore-section" class="section">
+                <h2>Explore Destinations</h2>
+                
+                <!-- Most Traveled Section -->
+                <div class="explore-subsection most-traveled">
+                    <h3><i class="fas fa-globe"></i> Most Places Travelled To</h3>
+                    <div id="most-traveled-grid" class="destinations-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Trending Destinations -->
+                <div class="explore-subsection trending">
+                    <h3><i class="fas fa-fire"></i> Trending This Month</h3>
+                    <div id="trending-grid" class="destinations-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Browse by Category -->
+                <div class="explore-subsection categories">
+                    <h3><i class="fas fa-th-large"></i> Browse by Category</h3>
+                    <div id="category-grid" class="category-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Featured Collections -->
+                <div class="explore-subsection collections">
+                    <h3><i class="fas fa-images"></i> Featured Collections</h3>
+                    <div id="collections-grid" class="collections-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reviews Section -->
+            <section id="reviews-section" class="section">
+                <h2>Destination Reviews</h2>
+
+                <!-- Review Stats -->
+                <div class="reviews-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">4.8</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">2.3K</div>
+                        <div class="stat-label">Total Reviews</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">89%</div>
+                        <div class="stat-label">Would Return</div>
+                    </div>
+                </div>
+
+                <!-- Filter Section -->
+                <div class="reviews-filter">
+                    <button class="review-filter-btn active" data-filter="all">All Reviews</button>
+                    <button class="review-filter-btn" data-filter="5">★★★★★ 5 Star</button>
+                    <button class="review-filter-btn" data-filter="4">★★★★ 4 Star</button>
+                    <button class="review-filter-btn" data-filter="3">★★★ 3 Star</button>
+                </div>
+
+                <!-- Recent Reviews -->
+                <div class="reviews-container">
+                    <h3>Recent Reviews</h3>
+                    <div id="reviews-list" class="reviews-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Top Rated Destinations -->
+                <div class="reviews-container">
+                    <h3>Top Rated Destinations</h3>
+                    <div id="top-rated-list" class="top-rated-list">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
             <!-- Travel Guide Section -->
             <section id="guide-section" class="section">
                 <h2>Travel Guide</h2>
@@ -182,9 +272,13 @@
                 <i class="fas fa-list"></i>
                 <span>Results</span>
             </button>
-            <button class="nav-bottom-link" data-section="map">
-                <i class="fas fa-map-location-dot"></i>
-                <span>Map</span>
+            <button class="nav-bottom-link" data-section="explore">
+                <i class="fas fa-compass"></i>
+                <span>Explore</span>
+            </button>
+            <button class="nav-bottom-link" data-section="reviews">
+                <i class="fas fa-star"></i>
+                <span>Reviews</span>
             </button>
             <button class="nav-bottom-link" data-section="guide">
                 <i class="fas fa-book"></i>
