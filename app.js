@@ -694,8 +694,21 @@ class TravelPlanner {
         }
 
         // Display specific content when section is selected
-        if (section === 'guide' && this.currentLocation) {
-            travelGuide.displayGuide(this.currentLocation);
+        if (section === 'guide') {
+            if (this.currentLocation) {
+                travelGuide.displayGuide(this.currentLocation);
+            } else {
+                // Display message if no location searched yet
+                const guideContent = document.getElementById('guide-content');
+                if (guideContent) {
+                    guideContent.innerHTML = '<div style="padding: 40px; text-align: center; color: #666;"><p style="font-size: 18px;">Please search for a destination first to view the travel guide.</p></div>';
+                }
+            }
+        } else if (section === 'profile') {
+            // Load profile data when profile section is shown
+            if (typeof loadProfileData === 'function') {
+                loadProfileData();
+            }
         } else if (section === 'explore') {
             this.displayExplore();
         } else if (section === 'reviews') {
