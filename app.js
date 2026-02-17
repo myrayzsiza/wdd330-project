@@ -832,7 +832,7 @@ class TravelPlanner {
         const mostTravelledGrid = document.getElementById('most-traveled-grid');
         const mostTravelledData = this.getMostTravelledDestinations();
         mostTravelledGrid.innerHTML = mostTravelledData.map(dest => `
-            <div class="destination-card" onclick="travelPlanner.searchDestination('${dest.name}')" style="cursor: pointer; transition: transform 0.2s;">
+            <div class="destination-card" data-destination="${dest.name}" style="cursor: pointer; transition: transform 0.2s;">
                 <div class="destination-card-image">${dest.emoji}</div>
                 <div class="destination-card-content">
                     <div class="destination-card-title">${dest.name}</div>
@@ -850,8 +850,12 @@ class TravelPlanner {
             </div>
         `).join('');
 
-        // Add hover effect to most traveled cards
+        // Add event listeners to most traveled cards
         mostTravelledGrid.querySelectorAll('.destination-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const destination = card.dataset.destination;
+                this.searchDestination(destination);
+            });
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-5px)';
             });
@@ -864,7 +868,7 @@ class TravelPlanner {
         const trendingGrid = document.getElementById('trending-grid');
         const trendingData = this.getTrendingDestinations();
         trendingGrid.innerHTML = trendingData.map(dest => `
-            <div class="destination-card" onclick="travelPlanner.searchDestination('${dest.name}')" style="cursor: pointer; transition: transform 0.2s;">
+            <div class="destination-card" data-destination="${dest.name}" style="cursor: pointer; transition: transform 0.2s;">
                 <div class="destination-card-image">${dest.emoji}</div>
                 <div class="destination-card-content">
                     <div class="destination-card-title">${dest.name}</div>
@@ -882,8 +886,12 @@ class TravelPlanner {
             </div>
         `).join('');
 
-        // Add hover effect to trending cards
+        // Add event listeners to trending cards
         trendingGrid.querySelectorAll('.destination-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const destination = card.dataset.destination;
+                this.searchDestination(destination);
+            });
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-5px)';
             });
@@ -896,14 +904,18 @@ class TravelPlanner {
         const categoryGrid = document.getElementById('category-grid');
         const categories = this.getCategories();
         categoryGrid.innerHTML = categories.map(cat => `
-            <div class="category-card" onclick="travelPlanner.searchByCategory('${cat.name}')" style="cursor: pointer; transition: transform 0.2s;">
+            <div class="category-card" data-category="${cat.name}" style="cursor: pointer; transition: transform 0.2s;">
                 <i class="${cat.icon}"></i>
                 <div class="category-card-name">${cat.name}</div>
             </div>
         `).join('');
 
-        // Add hover effect to category cards
+        // Add event listeners to category cards
         categoryGrid.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const category = card.dataset.category;
+                this.searchByCategory(category);
+            });
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'scale(1.05)';
             });
