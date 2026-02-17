@@ -104,6 +104,65 @@ class TravelPlanner {
     }
 
     /**
+     * Search for a destination (called from explore page)
+     */
+    async searchDestination(destinationName) {
+        // Update search input
+        const searchInput = document.getElementById('search-input');
+        searchInput.value = destinationName;
+
+        // Show home section with results
+        document.querySelectorAll('.sidebar-link, .nav-bottom-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        document.querySelector('.sidebar-link[data-section="home"]')?.classList.add('active');
+        document.querySelector('.nav-bottom-link[data-section="home"]')?.classList.add('active');
+
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById('home-section')?.classList.add('active');
+
+        // Close suggestions if open
+        this.closeSuggestions();
+
+        // Perform the search
+        await this.handleSearch();
+    }
+
+    /**
+     * Search by category - maps category to appropriate destination
+     */
+    async searchByCategory(categoryName) {
+        // Map categories to popular destinations
+        const categoryDestinations = {
+            'Adventure': 'Nepal',
+            'Culture': 'Rome',
+            'Beach': 'Bali',
+            'Mountains': 'Switzerland',
+            'Food': 'Bangkok',
+            'Nature': 'Costa Rica',
+            'History': 'Athens',
+            'Urban': 'Tokyo'
+        };
+
+        const destination = categoryDestinations[categoryName] || categoryName;
+        
+        // Perform search with the mapped destination
+        await this.searchDestination(destination);
+    }
+
+    /**
+     * Close suggestions list
+     */
+    closeSuggestions() {
+        const suggestionsList = document.getElementById('suggestions-list');
+        if (suggestionsList) {
+            suggestionsList.style.display = 'none';
+        }
+    }
+
+    /**
      * Handle search functionality
      */
     async handleSearch() {
@@ -773,7 +832,7 @@ class TravelPlanner {
         const mostTravelledGrid = document.getElementById('most-traveled-grid');
         const mostTravelledData = this.getMostTravelledDestinations();
         mostTravelledGrid.innerHTML = mostTravelledData.map(dest => `
-            <div class="destination-card">
+            <div class="destination-card" onclick="travelPlanner.searchDestination('${dest.name}')" style="cursor: pointer; transition: transform 0.2s;">
                 <div class="destination-card-image">${dest.emoji}</div>
                 <div class="destination-card-content">
                     <div class="destination-card-title">${dest.name}</div>
@@ -791,11 +850,21 @@ class TravelPlanner {
             </div>
         `).join('');
 
+        // Add hover effect to most traveled cards
+        mostTravelledGrid.querySelectorAll('.destination-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
         // Display trending destinations
         const trendingGrid = document.getElementById('trending-grid');
         const trendingData = this.getTrendingDestinations();
         trendingGrid.innerHTML = trendingData.map(dest => `
-            <div class="destination-card">
+            <div class="destination-card" onclick="travelPlanner.searchDestination('${dest.name}')" style="cursor: pointer; transition: transform 0.2s;">
                 <div class="destination-card-image">${dest.emoji}</div>
                 <div class="destination-card-content">
                     <div class="destination-card-title">${dest.name}</div>
@@ -813,15 +882,35 @@ class TravelPlanner {
             </div>
         `).join('');
 
+        // Add hover effect to trending cards
+        trendingGrid.querySelectorAll('.destination-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
         // Display categories
         const categoryGrid = document.getElementById('category-grid');
         const categories = this.getCategories();
         categoryGrid.innerHTML = categories.map(cat => `
-            <div class="category-card" onclick="alert('Browse ${cat.name} category')">
+            <div class="category-card" onclick="travelPlanner.searchByCategory('${cat.name}')" style="cursor: pointer; transition: transform 0.2s;">
                 <i class="${cat.icon}"></i>
                 <div class="category-card-name">${cat.name}</div>
             </div>
         `).join('');
+
+        // Add hover effect to category cards
+        categoryGrid.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
 
         // Display collections
         const collectionsGrid = document.getElementById('collections-grid');
