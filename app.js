@@ -134,6 +134,11 @@ class TravelPlanner {
             this.showMapSection();
             this.showItinerarySection();
 
+            // Display travel guide for the destination
+            if (typeof travelGuide !== 'undefined') {
+                travelGuide.displayGuide(query);
+            }
+
             // Initialize map
             if (typeof initMap === 'function') {
                 initMap(query);
@@ -686,6 +691,11 @@ class TravelPlanner {
         const sectionElement = document.getElementById(sectionId);
         if (sectionElement) {
             sectionElement.classList.add('active');
+        }
+
+        // Display travel guide if guide section is selected
+        if (section === 'guide' && this.currentLocation) {
+            travelGuide.displayGuide(this.currentLocation);
         }
     }
 

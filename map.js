@@ -138,19 +138,20 @@ function addMarker(attraction) {
         animation: google.maps.Animation.DROP
     });
 
-    // Create info window
-    const infoWindow = new google.maps.InfoWindow({
-        content: `
-            <div style="padding: 10px; max-width: 250px;">
-                <h4 style="margin: 0 0 8px 0; color: #0056b3;">${attraction.name}</h4>
-                <p style="margin: 0 0 8px 0; font-size: 0.9rem; color: #666;">
-                    ${attraction.description}
-                </p>
-                <p style="margin: 0; font-size: 0.85rem; color: #999;">
-                    Type: ${attraction.type}
-                </p>
+    // Create info window with enhanced content
+    const infoWindowContent = `
+        <div style="padding: 10px; max-width: 280px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            <h4 style="margin: 0 0 8px 0; color: #0056b3;">${attraction.name}</h4>
+            <p style="margin: 0 0 8px 0; font-size: 0.9rem; color: #666;">
+                ${attraction.description}
+            </p>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px; font-size: 0.85rem;">
+                <span style="background: #e7f3ff; color: #0056b3; padding: 4px 8px; border-radius: 3px;">
+                    📌 ${attraction.type}
+                </span>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button onclick="showRoute('${attraction.name}')" style="
-                    margin-top: 8px;
                     padding: 6px 12px;
                     background-color: #0056b3;
                     color: white;
@@ -158,11 +159,28 @@ function addMarker(attraction) {
                     border-radius: 4px;
                     cursor: pointer;
                     font-size: 0.85rem;
-                ">
-                    Get Directions
+                    transition: background-color 0.3s;
+                " onmouseover="this.style.backgroundColor='#003d82'" onmouseout="this.style.backgroundColor='#0056b3'">
+                    📍 Get Directions
+                </button>
+                <button onclick="showAttractionGuide('${attraction.name}')" style="
+                    padding: 6px 12px;
+                    background-color: #28a745;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    transition: background-color 0.3s;
+                " onmouseover="this.style.backgroundColor='#1e7b34'" onmouseout="this.style.backgroundColor='#28a745'">
+                    📖 Guide
                 </button>
             </div>
-        `
+        </div>
+    `;
+
+    const infoWindow = new google.maps.InfoWindow({
+        content: infoWindowContent
     });
 
     // Show info window on marker click
@@ -405,3 +423,50 @@ window.initMap = initMap;
 window.showRoute = showRoute;
 window.clearMap = clearMap;
 window.zoomToArea = zoomToArea;
+
+/**
+ * Show attraction guide information
+ */
+function showAttractionGuide(attractionName) {
+    if (typeof travelGuide === 'undefined') return;
+    
+    // You could enhance this to show specific attraction info from the travel guide
+    console.log(`Showing guide for: ${attractionName}`);
+    alert(`Guide info for ${attractionName} - Check the Travel Guide section for more details!`);
+}
+
+/**
+ * Initialize map with travel guide integration
+ */
+function initMapWithGuide(searchQuery = 'New York') {
+    initMap(searchQuery);
+    
+    // Display travel guide if available
+    if (typeof travelGuide !== 'undefined') {
+        travelGuide.displayGuide(searchQuery);
+    }
+}
+
+/**
+ * Add multiple attractions with travel guide data
+ */
+function addAttractionsFromGuide(destination) {
+    if (typeof travelGuide === 'undefined') return;
+    
+    const guide = travelGuide.getGuide(destination);
+    if (!guide || !guide.highlights) return;
+    
+    // Add highlight attractions to map
+    guide.highlights.slice(0, 4).forEach((highlight, index) => {
+        const offset = 0.005 * (index + 1);
+        addMarker({
+            name: highlight.title,
+            position: {
+                lat: markers[0]?.getPosition().lat() + offset || 40.7128 + offset,
+                lng: markers[0]?.getPosition().lng() + offset || -74.0060 + offset
+            },
+            type: 'attraction',
+            description: highlight.description
+        });
+    });
+}
