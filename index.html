@@ -71,6 +71,34 @@
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
+                    <div class="account-menu">
+                        <div id="guestMenu">
+                            <a href="login.html" class="btn-account" title="Sign In">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Sign In</span>
+                            </a>
+                            <a href="register.html" class="btn-account" title="Create Account">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Register</span>
+                            </a>
+                        </div>
+                        <div id="userMenu" style="display: none;">
+                            <button id="userMenuBtn" class="btn-account user-profile-btn" title="User Menu">
+                                <i class="fas fa-user-circle"></i>
+                                <span id="userDisplayName">User</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="dropdownMenu" class="dropdown-menu" style="display: none;">
+                                <a href="profile.html" class="dropdown-item">
+                                    <i class="fas fa-user"></i> My Profile
+                                </a>
+                                <hr class="dropdown-divider">
+                                <button id="logoutBtn" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -306,6 +334,57 @@
     <script src="map.js"></script>
     <script src="guide.js"></script>
     <script src="app.js"></script>
+    <script src="js/auth-ui.js"></script>
+    <script>
+        /**
+         * Account Menu Handler
+         */
+        function initAccountMenu() {
+            const currentUser = localStorage.getItem('currentUser');
+            const guestMenu = document.getElementById('guestMenu');
+            const userMenu = document.getElementById('userMenu');
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (currentUser) {
+                // User is logged in
+                const user = JSON.parse(currentUser);
+                guestMenu.style.display = 'none';
+                userMenu.style.display = 'block';
+                
+                const firstName = user.firstName || 'User';
+                document.getElementById('userDisplayName').textContent = firstName;
+
+                // Toggle dropdown menu
+                userMenuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdownMenu.style.display = dropdownMenu.style.display === 'none' ? 'block' : 'none';
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', () => {
+                    dropdownMenu.style.display = 'none';
+                });
+
+                // Logout handler
+                logoutBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to logout?')) {
+                        localStorage.removeItem('currentUser');
+                        localStorage.removeItem('rememberMe');
+                        window.location.href = 'index.html';
+                    }
+                });
+            } else {
+                // User is not logged in
+                guestMenu.style.display = 'flex';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        // Initialize account menu when page loads
+        document.addEventListener('DOMContentLoaded', initAccountMenu);
+    </script>
     <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
 </body>
