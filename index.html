@@ -42,10 +42,10 @@
                     <i class="fas fa-heart"></i>
                     <span>Favorites</span>
                 </button>
-                <a href="profile.html" class="sidebar-link">
+                <button class="sidebar-link" data-section="profile">
                     <i class="fas fa-user"></i>
                     <span>Profile</span>
-                </a>
+                </button>
             </nav>
         </aside>
 
@@ -296,6 +296,114 @@
                     <!-- Guide content populated by JavaScript -->
                 </div>
             </section>
+
+            <!-- Profile Section -->
+            <section id="profile-section" class="section" style="display: none;">
+                <h2>My Profile</h2>
+                <div class="profile-grid-inline">
+                    <!-- Left Sidebar -->
+                    <div class="profile-card-inline">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="displayName">Loading...</h3>
+                            <p id="displayEmail"></p>
+                        </div>
+
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <div class="stat-value" id="favoriteCount">0</div>
+                                <div class="stat-label">Favorites</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="memberDays">0</div>
+                                <div class="stat-label">Days Member</div>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn-action btn-secondary" onclick="toggleEditMode()">
+                                <i class="fas fa-edit"></i> Edit Profile
+                            </button>
+                            <button class="btn-action btn-secondary" onclick="openPasswordModal()">
+                                <i class="fas fa-lock"></i> Change Password
+                            </button>
+                            <button class="btn-action btn-danger" onclick="logoutUser()">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Content -->
+                    <div class="profile-card-inline">
+                        <div id="viewMode">
+                            <div class="form-section">
+                                <h3>Personal Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        <p id="viewFirstName" style="padding: 12px; background: #f5f5f5; border-radius: 6px; margin: 0;">-</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        <p id="viewLastName" style="padding: 12px; background: #f5f5f5; border-radius: 6px; margin: 0;">-</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <p id="viewEmail" style="padding: 12px; background: #f5f5f5; border-radius: 6px; margin: 0;">-</p>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Account Information</h3>
+                                <div class="form-group">
+                                    <label>Member Since</label>
+                                    <p id="viewMemberSince" style="padding: 12px; background: #f5f5f5; border-radius: 6px; margin: 0;">-</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Updated</label>
+                                    <p id="viewUpdatedAt" style="padding: 12px; background: #f5f5f5; border-radius: 6px; margin: 0;">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="editMode" style="display: none;">
+                            <div id="editMessage" class="message"></div>
+
+                            <form id="edit-profile-form">
+                                <div class="form-section">
+                                    <h3>Update Information</h3>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="editFirstName">First Name</label>
+                                            <input type="text" id="editFirstName" name="firstName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editLastName">Last Name</label>
+                                            <input type="text" id="editLastName" name="lastName" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editEmail">Email Address</label>
+                                        <input type="email" id="editEmail" name="email" required>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn-submit">
+                                        <i class="fas fa-save"></i> Save Changes
+                                    </button>
+                                    <button type="button" class="btn-submit" style="background: #6c757d;" onclick="toggleEditMode()">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Bottom Navigation (Mobile) -->
@@ -320,6 +428,10 @@
                 <i class="fas fa-heart"></i>
                 <span>Favorites</span>
             </button>
+            <button class="nav-bottom-link" data-section="profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </button>
         </nav>
     </div>
 
@@ -333,13 +445,375 @@
         </div>
     </div>
 
+    <!-- Password Change Modal -->
+    <div id="passwordModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 40px; border-radius: 12px; max-width: 450px; width: 90%; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);">
+            <div style="font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #333;">
+                <i class="fas fa-lock"></i> Change Password
+            </div>
+            <div id="passwordMessage" class="message"></div>
+            <form id="password-form">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" style="padding: 12px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; background: #f0f0f0; color: #333;" onclick="closePasswordModal()">Cancel</button>
+                    <button type="submit" style="padding: 12px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="data.js"></script>
     <script src="map.js"></script>
     <script src="guide.js"></script>
     <script src="app.js"></script>
     <script src="js/auth-ui.js"></script>
+    <style>
+        /* Profile Styles */
+        .profile-grid-inline {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-card-inline {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+        }
+
+        .profile-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-info h3 {
+            font-size: 24px;
+            color: #333;
+            margin: 0 0 5px 0;
+        }
+
+        .profile-info p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+            padding: 25px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn-action {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            color: #333;
+            font-size: 18px;
+            margin: 0 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .profile-grid-inline {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: row;
+            }
+        }
+    </style>
     <script>
+        /**
+         * Profile Management Functions
+         */
+        function loadProfileData() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(currentUser);
+            
+            // Update display name and email
+            document.getElementById('displayName').textContent = `${user.firstName} ${user.lastName}`;
+            document.getElementById('displayEmail').textContent = user.email;
+            
+            // Update view mode
+            document.getElementById('viewFirstName').textContent = user.firstName;
+            document.getElementById('viewLastName').textContent = user.lastName;
+            document.getElementById('viewEmail').textContent = user.email;
+            document.getElementById('viewMemberSince').textContent = new Date(user.createdAt).toLocaleDateString();
+            document.getElementById('viewUpdatedAt').textContent = new Date(user.updatedAt).toLocaleDateString();
+            
+            // Update edit form
+            document.getElementById('editFirstName').value = user.firstName;
+            document.getElementById('editLastName').value = user.lastName;
+            document.getElementById('editEmail').value = user.email;
+            
+            // Calculate favorite count
+            const favoriteCount = user.favorites ? user.favorites.length : 0;
+            document.getElementById('favoriteCount').textContent = favoriteCount;
+            
+            // Calculate days as member
+            const createdDate = new Date(user.createdAt);
+            const today = new Date();
+            const daysDiff = Math.floor((today - createdDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('memberDays').textContent = daysDiff;
+        }
+
+        function toggleEditMode() {
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            viewMode.style.display = viewMode.style.display === 'none' ? 'block' : 'none';
+            editMode.style.display = editMode.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function openPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('password-form').reset();
+            clearPasswordMessage();
+        }
+
+        function logoutUser() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('rememberMe');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function showEditMessage(message, type) {
+            const messageDiv = document.getElementById('editMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+        }
+
+        function showPasswordMessage(message, type) {
+            const messageDiv = document.getElementById('passwordMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+        }
+
+        function clearPasswordMessage() {
+            document.getElementById('passwordMessage').className = 'message';
+            document.getElementById('passwordMessage').textContent = '';
+        }
+
+        // Profile form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load profile data when profile section becomes visible
+            const editForm = document.getElementById('edit-profile-form');
+            if (editForm) {
+                editForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    const firstName = document.getElementById('editFirstName').value;
+                    const lastName = document.getElementById('editLastName').value;
+                    const email = document.getElementById('editEmail').value;
+
+                    try {
+                        const response = await fetch('api/update-profile', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                userId: currentUser.id,
+                                firstName,
+                                lastName,
+                                email
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            showEditMessage('Profile updated successfully!', 'success');
+                            localStorage.setItem('currentUser', JSON.stringify(result.user));
+                            setTimeout(() => {
+                                loadProfileData();
+                                toggleEditMode();
+                            }, 1000);
+                        } else {
+                            showEditMessage(result.message, 'error');
+                        }
+                    } catch (error) {
+                        showEditMessage('An error occurred. Please try again.', 'error');
+                        console.error('Error:', error);
+                    }
+                });
+            }
+
+            // Password form submission
+            const passwordForm = document.getElementById('password-form');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    const currentPassword = document.getElementById('currentPassword').value;
+                    const newPassword = document.getElementById('newPassword').value;
+                    const confirmPassword = document.getElementById('confirmNewPassword').value;
+
+                    if (newPassword !== confirmPassword) {
+                        showPasswordMessage('New passwords do not match!', 'error');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('api/change-password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                userId: currentUser.id,
+                                oldPassword: currentPassword,
+                                newPassword
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            showPasswordMessage('Password changed successfully!', 'success');
+                            setTimeout(() => {
+                                closePasswordModal();
+                            }, 1000);
+                        } else {
+                            showPasswordMessage(result.message, 'error');
+                        }
+                    } catch (error) {
+                        showPasswordMessage('An error occurred. Please try again.', 'error');
+                        console.error('Error:', error);
+                    }
+                });
+            }
+        });
+
         /**
          * Account Menu Handler
          */
@@ -359,6 +833,9 @@
                 
                 const firstName = user.firstName || 'User';
                 document.getElementById('userDisplayName').textContent = firstName;
+
+                // Load profile data
+                loadProfileData();
 
                 // Toggle dropdown menu
                 userMenuBtn.addEventListener('click', (e) => {
@@ -388,6 +865,14 @@
 
         // Initialize account menu when page loads
         document.addEventListener('DOMContentLoaded', initAccountMenu);
+
+        // Close password modal when clicking outside
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('passwordModal');
+            if (e.target === modal) {
+                closePasswordModal();
+            }
+        });
     </script>
     <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
