@@ -431,6 +431,10 @@ body {
     height: 300px;
     border-radius: 8px;
     overflow: hidden;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .hero-image svg {

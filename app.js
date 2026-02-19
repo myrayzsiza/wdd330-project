@@ -1030,6 +1030,14 @@ class TravelPlanner {
 
         // Display simple favorites section
         if (this.favorites.length > 0) {
+            const favoriteImages = {
+                'Paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=300&h=200&fit=crop',
+                'Tokyo': 'https://images.unsplash.com/photo-1497442671051-6b2b553e5d00?w=300&h=200&fit=crop',
+                'London': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=300&h=200&fit=crop',
+                'Dubai': 'https://images.unsplash.com/photo-1512223521948-c1395cc4ea8e?w=300&h=200&fit=crop',
+                'New York': 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=300&h=200&fit=crop',
+                'default': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=300&h=200&fit=crop'
+            };
             content += `
                 <div style="margin-bottom: 30px;">
                     <h3 style="color: #333; font-size: 22px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #dc3545;">
@@ -1038,9 +1046,7 @@ class TravelPlanner {
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
                         ${this.favorites.map(place => `
                             <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s; hover:box-shadow: 0 4px 16px rgba(220, 53, 69, 0.2);">
-                                <div style="font-size: 3rem; background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); padding: 20px; text-align: center;">
-                                    ${place.image}
-                                </div>
+                                <img src="${favoriteImages[place.name] || favoriteImages['default']}" alt="${place.name}" style="width: 100%; height: 180px; object-fit: cover;">
                                 <div style="padding: 15px;">
                                     <h4 style="margin: 0 0 8px 0; color: #333; font-size: 16px;">${place.name}</h4>
                                     <div style="color: #666; font-size: 13px; margin-bottom: 10px;">
@@ -1256,19 +1262,29 @@ class TravelPlanner {
         // Display most traveled destinations
         const mostTravelledGrid = document.getElementById('most-traveled-grid');
         const mostTravelledData = this.getMostTravelledDestinations();
+        const mostTravelledImages = {
+            'Paris': 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop',
+            'Tokyo': 'https://images.unsplash.com/photo-1497442671051-6b2b553e5d00?w=400&h=300&fit=crop',
+            'London': 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=300&fit=crop',
+            'Dubai': 'https://images.unsplash.com/photo-1512223521948-c1395cc4ea8e?w=400&h=300&fit=crop',
+            'New York': 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&h=300&fit=crop',
+            'Barcelona': 'https://images.unsplash.com/photo-1579837030632-7eec264c27ff?w=400&h=300&fit=crop',
+            'Rome': 'https://images.unsplash.com/photo-1552832860-cfde47285fda?w=400&h=300&fit=crop',
+            'Sydney': 'https://images.unsplash.com/photo-1506973404872-a4a50e48fcff?w=400&h=300&fit=crop'
+        };
         mostTravelledGrid.innerHTML = mostTravelledData.map(dest => `
-            <div class="destination-card" data-destination="${dest.name}" style="cursor: pointer; transition: transform 0.2s;">
-                <div class="destination-card-image">${dest.emoji}</div>
-                <div class="destination-card-content">
-                    <div class="destination-card-title">${dest.name}</div>
+            <div class="destination-card" data-destination="${dest.name}" style="cursor: pointer; transition: transform 0.2s; background-image: url('${mostTravelledImages[dest.name] || 'https://via.placeholder.com/400x300'}'); background-size: cover; background-position: center; position: relative; overflow: hidden; border-radius: 12px; min-height: 250px;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);"></div>
+                <div class="destination-card-content" style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; color: white;">
+                    <div class="destination-card-title" style="color: white; font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${dest.name}</div>
                     <div class="destination-card-stats">
-                        <div class="destination-card-stat">
-                            <span class="destination-card-stat-value">${dest.visitors}</span>
-                            <span>Visitors</span>
+                        <div class="destination-card-stat" style="color: rgba(255,255,255,0.9);">
+                            <span class="destination-card-stat-value" style="color: white;">${dest.visitors}</span>
+                            <span style="font-size: 0.85rem;">Visitors</span>
                         </div>
-                        <div class="destination-card-stat">
-                            <span class="destination-card-stat-value">${dest.rating}</span>
-                            <span>Rating</span>
+                        <div class="destination-card-stat" style="color: rgba(255,255,255,0.9);">
+                            <span class="destination-card-stat-value" style="color: white;">⭐ ${dest.rating}</span>
+                            <span style="font-size: 0.85rem;">Rating</span>
                         </div>
                     </div>
                 </div>
@@ -1292,19 +1308,28 @@ class TravelPlanner {
         // Display trending destinations
         const trendingGrid = document.getElementById('trending-grid');
         const trendingData = this.getTrendingDestinations();
+        const trendingImages = {
+            'Istanbul': 'https://images.unsplash.com/photo-1524578271613-7bccffc1216f?w=400&h=300&fit=crop',
+            'Bangkok': 'https://images.unsplash.com/photo-1518684029980-cf91eb6a4035?w=400&h=300&fit=crop',
+            'Singapore': 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=300&fit=crop',
+            'Amsterdam': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=300&fit=crop',
+            'Bali': 'https://images.unsplash.com/photo-1537225228614-956675160fe8?w=400&h=300&fit=crop',
+            'Prague': 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&h=300&fit=crop'
+        };
         trendingGrid.innerHTML = trendingData.map(dest => `
-            <div class="destination-card" data-destination="${dest.name}" style="cursor: pointer; transition: transform 0.2s;">
-                <div class="destination-card-image">${dest.emoji}</div>
-                <div class="destination-card-content">
-                    <div class="destination-card-title">${dest.name}</div>
+            <div class="destination-card" data-destination="${dest.name}" style="cursor: pointer; transition: transform 0.2s; background-image: url('${trendingImages[dest.name] || 'https://via.placeholder.com/400x300'}'); background-size: cover; background-position: center; position: relative; overflow: hidden; border-radius: 12px; min-height: 250px;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);"></div>
+                <div style="position: absolute; top: 10px; right: 10px; background: rgba(255, 107, 107, 0.9); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; z-index: 3;">🔥 ${dest.trend}</div>
+                <div class="destination-card-content" style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; color: white;">
+                    <div class="destination-card-title" style="color: white; font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${dest.name}</div>
                     <div class="destination-card-stats">
-                        <div class="destination-card-stat">
-                            <span class="destination-card-stat-value">${dest.trend}</span>
-                            <span>${dest.trendLabel}</span>
+                        <div class="destination-card-stat" style="color: rgba(255,255,255,0.9);">
+                            <span class="destination-card-stat-value" style="color: white;">📈 ${dest.trend}</span>
+                            <span style="font-size: 0.85rem;">Trending</span>
                         </div>
-                        <div class="destination-card-stat">
-                            <span class="destination-card-stat-value">${dest.rating}</span>
-                            <span>Rating</span>
+                        <div class="destination-card-stat" style="color: rgba(255,255,255,0.9);">
+                            <span class="destination-card-stat-value" style="color: white;">⭐ ${dest.rating}</span>
+                            <span style="font-size: 0.85rem;">Rating</span>
                         </div>
                     </div>
                 </div>
@@ -1328,10 +1353,21 @@ class TravelPlanner {
         // Display categories
         const categoryGrid = document.getElementById('category-grid');
         const categories = this.getCategories();
+        const categoryImages = {
+            'Adventure': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=300&fit=crop',
+            'Culture': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=300&h=300&fit=crop',
+            'Beach': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&h=300&fit=crop',
+            'Mountains': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=300&fit=crop',
+            'Food': 'https://images.unsplash.com/photo-1504674900968-ce21bbb51022?w=300&h=300&fit=crop',
+            'Nature': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=300&fit=crop',
+            'History': 'https://images.unsplash.com/photo-1577720643272-265f434a3f5d?w=300&h=300&fit=crop',
+            'Urban': 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=300&h=300&fit=crop'
+        };
         categoryGrid.innerHTML = categories.map(cat => `
-            <div class="category-card" data-category="${cat.name}" style="cursor: pointer; transition: transform 0.2s;">
-                <i class="${cat.icon}"></i>
-                <div class="category-card-name">${cat.name}</div>
+            <div class="category-card" data-category="${cat.name}" style="cursor: pointer; transition: transform 0.2s; background-image: url('${categoryImages[cat.name]}'); background-size: cover; background-position: center; position: relative;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%); border-radius: inherit;"></div>
+                <i class="${cat.icon}" style="font-size: 2rem; color: white; z-index: 2; position: relative;"></i>
+                <div class="category-card-name" style="color: white; z-index: 2; position: relative; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${cat.name}</div>
             </div>
         `).join('');
 
@@ -1352,15 +1388,24 @@ class TravelPlanner {
         // Display collections
         const collectionsGrid = document.getElementById('collections-grid');
         const collections = this.getCollections();
+        const collectionImages = {
+            'Hidden Gems': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+            'Family Friendly': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=300&fit=crop',
+            'Weekend Escapes': 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop',
+            'Luxury Travel': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
+            'Budget Adventures': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=300&fit=crop',
+            'Road Trips': 'https://images.unsplash.com/photo-1527489377706-5bf97e608852?w=400&h=300&fit=crop'
+        };
         collectionsGrid.innerHTML = collections.map(col => `
-            <div class="collection-card">
-                <div class="collection-card-header">
-                    <i class="${col.icon}"></i>
-                    <div class="collection-card-title">${col.title}</div>
+            <div class="collection-card" style="background-image: url('${collectionImages[col.title]}'); background-size: cover; background-position: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 100%);"></div>
+                <div class="collection-card-header" style="position: relative; z-index: 2; color: white;">
+                    <i class="${col.icon}" style="font-size: 2rem; color: white;"></i>
+                    <div class="collection-card-title" style="color: white; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${col.title}</div>
                 </div>
-                <div class="collection-card-body">
-                    <div class="collection-card-description">${col.description}</div>
-                    <div class="collection-card-count">${col.count} destinations</div>
+                <div class="collection-card-body" style="position: relative; z-index: 2; color: white;">
+                    <div class="collection-card-description" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${col.description}</div>
+                    <div class="collection-card-count" style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-top: 10px;">${col.count} destinations</div>
                 </div>
             </div>
         `).join('');

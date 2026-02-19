@@ -167,13 +167,23 @@ class TravelUtils {
         // Front of card
         const cardFront = document.createElement('div');
         cardFront.className = 'card-front';
+        const categoryImages = {
+            'attraction': 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=400&h=300&fit=crop',
+            'hotel': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
+            'restaurant': 'https://images.unsplash.com/photo-1504674900968-ce21bbb51022?w=400&h=300&fit=crop',
+            'museum': 'https://images.unsplash.com/photo-1577720643272-265f434a3f5d?w=400&h=300&fit=crop',
+            'park': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
+            'default': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=300&fit=crop'
+        };
+        const imageUrl = categoryImages[destination.type] || categoryImages['default'];
         cardFront.innerHTML = `
             <div class="card-image-wrapper">
                 <img 
-                    src="https://via.placeholder.com/300x200?text=${encodeURIComponent(destination.name)}" 
+                    src="${imageUrl}" 
                     alt="${destination.name}" 
                     class="card-image"
                     loading="lazy"
+                    onerror="this.src='https://via.placeholder.com/400x300?text=${encodeURIComponent(destination.name)}'"
                 >
                 <span class="card-type-badge">${destination.type}</span>
             </div>
