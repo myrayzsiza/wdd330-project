@@ -7,6 +7,8 @@
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet Maps CSS - Free mapping library, no API key needed -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 </head>
 <body>
     <div class="app-wrapper">
@@ -470,13 +472,13 @@
     </div>
 
     <!-- Scripts -->
+    <!-- Leaflet Maps JS - Free mapping library, no API key needed -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script src="data.js"></script>
     <script src="map.js"></script>
     <script src="guide.js"></script>
     <script src="app.js"></script>
     <script src="js/auth-ui.js"></script>
-    <style>
-        /* Profile Styles */
         .profile-grid-inline {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -890,7 +892,5 @@
             }
         });
     </script>
-    <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
 </body>
 </html>

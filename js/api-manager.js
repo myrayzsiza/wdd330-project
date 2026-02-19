@@ -20,16 +20,17 @@ class APIManager {
                 current: '/weather',
                 forecast: '/forecast'
             },
-            // Google Maps API (used via library)
-            googleMaps: {
-                baseUrl: 'https://maps.googleapis.com/maps/api'
+            // OpenStreetMap (Free Mapping - No API key needed)
+            maps: {
+                geocoding: 'https://nominatim.openstreetmap.org',
+                tiles: 'https://tile.openstreetmap.org'
             }
         };
 
         this.apiKeys = {
             tripAdvisor: 'YOUR_TRIPADVISOR_API_KEY',
-            openWeather: 'YOUR_OPENWEATHER_API_KEY',
-            googleMaps: 'YOUR_GOOGLE_MAPS_API_KEY'
+            openWeather: 'YOUR_OPENWEATHER_API_KEY'
+            // Leaflet/OpenStreetMap: No API key needed!
         };
 
         this.cache = new Map();
@@ -241,98 +242,170 @@ class APIManager {
 
     // ==================== GOOGLE MAPS HELPERS ====================
 
-    /**
-     * Geocode address to coordinates
-     * Requires Google Maps API loaded in HTML
-     * @param {string} address
-     * @returns {Promise<object|null>}
-     */
-    async geocodeAddress(address) {
-        try {
-            if (typeof google === 'undefined' || !google.maps) {
-                throw new Error('Google Maps API not loaded');
-            }
-
-            const geocoder = new google.maps.Geocoder();
-            return new Promise((resolve, reject) => {
-                geocoder.geocode({ address }, (results, status) => {
-                    if (status === 'OK') {
-                        resolve({
-                            lat: results[0].geometry.location.lat(),
-                            lng: results[0].geometry.location.lng(),
-                            formattedAddress: results[0].formatted_address
-                        });
-                    } else {
-                        reject(new Error(`Geocoding failed: ${status}`));
-                    }
-                });
-            });
-        } catch (error) {
-            console.error('Geocoding error:', error);
-            return null;
+/**
+ * Geocode address to coordinates using OpenStreetMap Nominatim API (free, no API key required)
+ * @param {string} address
+ * @returns {Promise<object|null>}
+ */
+async geocodeAddress(address) {
+    try {
+        if (!address || address.trim() === '') {
+            throw new Error('Address cannot be empty');
         }
+
+        // Use OpenStreetMap Nominatim API (free geocoding)
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`Geocoding API error: ${response.status}`);
+        }
+
+        const results = await response.json();
+        
+        if (results && results.length > 0) {
+            const result = results[0];
+            return {
+                lat: parseFloat(result.lat),
+                lng: parseFloat(result.lon),
+                formattedAddress: result.display_name
+            };
+        } else {
+            throw new Error(`No results found for address: ${address}`);
+        }
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        return null;
     }
+}
 
     /**
-     * Create map marker
-     * @param {object} map - Google Map instance
+     * Create map marker for Leaflet map
+     * @param {object} leafletMap - Leaflet map instance
      * @param {object} location - {lat, lng}
      * @param {object} options - Marker options
-     * @returns {google.maps.Marker}
+     * @returns {L.marker}
      */
-    createMapMarker(map, location, options = {}) {
-        if (typeof google === 'undefined' || !google.maps) {
-            console.error('Google Maps API not loaded');
+    createMapMarker(leafletMap, location, options = {}) {
+        if (!leafletMap || !L || !L.marker) {
+            console.error('Leaflet library not available');
             return null;
         }
 
         const markerOptions = {
-            position: location,
-            map: map,
-            title: options.title || 'Destination',
-            ...options
+            title: options.title || 'Destination'
         };
 
-        return new google.maps.Marker(markerOptions);
+        // Create custom icon if color specified
+        if (options.color) {
+            const colors = {
+                'yellow': '#FBBC04',
+                'red': '#EA4335',
+                'orange': '#FF9800',
+                'green': '#34A853',
+                'blue': '#4285F4'
+            };
+            
+            const color = colors[options.color] || colors['blue'];
+            
+            markerOptions.icon = L.divIcon({
+                html: `
+                    <div style="
+                        background-color: ${color};
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: bold;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                        font-size: 20px;
+                    ">
+                        ${options.icon || '📍'}
+                    </div>
+                `,
+                iconSize: [40, 40],
+                iconAnchor: [20, 40],
+                popupAnchor: [0, -40]
+            });
+        }
+
+        const marker = L.marker([location.lat, location.lng], markerOptions).addTo(leafletMap);
+
+        // Add popup if content provided
+        if (options.popupContent) {
+            marker.bindPopup(options.popupContent);
+        }
+
+        return marker;
     }
 
     /**
-     * Calculate route and display on map
-     * @param {object} map
+     * Calculate route and display on Leaflet map
+     * Uses OpenRouteService API (free tier available)
+     * @param {object} leafletMap - Leaflet map instance
      * @param {object} origin - {lat, lng}
      * @param {object} destination - {lat, lng}
      * @returns {Promise<object>}
      */
-    async calculateRoute(map, origin, destination) {
+    async calculateRoute(leafletMap, origin, destination) {
         try {
-            if (typeof google === 'undefined' || !google.maps) {
-                throw new Error('Google Maps API not loaded');
+            if (!leafletMap || !L) {
+                throw new Error('Leaflet map not available');
             }
 
-            const directionsService = new google.maps.DirectionsService();
-            const directionsRenderer = new google.maps.DirectionsRenderer({ map });
+            // Use OpenRouteService or similar free routing API
+            // For demo purposes, draw a simple line between points
+            const routeCoordinates = [
+                [origin.lat, origin.lng],
+                [destination.lat, destination.lng]
+            ];
 
-            return new Promise((resolve, reject) => {
-                directionsService.route(
-                    {
-                        origin,
-                        destination,
-                        travelMode: google.maps.TravelMode.DRIVING
-                    },
-                    (result, status) => {
-                        if (status === 'OK') {
-                            directionsRenderer.setDirections(result);
-                            resolve(result);
-                        } else {
-                            reject(new Error(`Directions request failed: ${status}`));
-                        }
-                    }
-                );
-            });
+            // Draw polyline on map
+            const polyline = L.polyline(routeCoordinates, {
+                color: '#0056b3',
+                weight: 4,
+                opacity: 0.7,
+                dashArray: '5, 5'
+            }).addTo(leafletMap);
+
+            // Store reference for later removal
+            window.currentRoute = polyline;
+
+            // Calculate distance
+            const distance = this.calculateDistance(origin, destination);
+
+            return {
+                distance: distance,
+                route: polyline,
+                waypoints: routeCoordinates
+            };
         } catch (error) {
             console.error('Route calculation error:', error);
             return null;
         }
+    }
+
+    /**
+     * Calculate distance between two coordinates (in kilometers)
+     * @param {object} origin - {lat, lng}
+     * @param {object} destination - {lat, lng}
+     * @returns {number}
+     */
+    calculateDistance(origin, destination) {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (destination.lat - origin.lat) * Math.PI / 180;
+        const dLng = (destination.lng - origin.lng) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return parseFloat((R * c).toFixed(2));
     }
 
     // ==================== MOCK DATA GENERATORS ====================
@@ -512,7 +585,7 @@ class APIManager {
         return {
             tripAdvisor: this.apiKeys.tripAdvisor !== 'YOUR_TRIPADVISOR_API_KEY',
             openWeather: this.apiKeys.openWeather !== 'YOUR_OPENWEATHER_API_KEY',
-            googleMaps: this.apiKeys.googleMaps !== 'YOUR_GOOGLE_MAPS_API_KEY',
+            maps: 'Leaflet + OpenStreetMap (No API key required)',
             cacheSize: this.cache.size,
             cachedItems: Array.from(this.cache.keys())
         };

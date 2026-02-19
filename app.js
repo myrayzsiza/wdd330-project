@@ -615,7 +615,9 @@ class TravelPlanner {
         } else {
             // Remove from favorites
             this.favorites.splice(index, 1);
-            alert(`Removed "${place.name}" from favorites!`);
+            const successMsg = `✓ Removed "${place.name}" from favorites!`;
+            alert(successMsg);
+            console.log(successMsg);
             this.saveFavorites();
             this.displayFavorites();
         }
@@ -629,18 +631,23 @@ class TravelPlanner {
         
         let content = `
             <div style="padding: 20px;">
-                <h3 style="margin-bottom: 20px;">Save to Trip</h3>
-                <p style="margin-bottom: 20px; color: #666;">Select a trip to save <strong>"${place.name}"</strong></p>
+                <h3 style="margin-bottom: 20px; color: #0056b3;">
+                    <i class="fas fa-heart"></i> Save to Trip
+                </h3>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Select a trip to save <strong>"${place.name}"</strong> to your favorites
+                </p>
         `;
 
         if (trips.length > 0) {
-            content += '<div style="margin-bottom: 20px;"><strong>Existing Trips:</strong></div>';
-            content += '<div style="margin-bottom: 15px;">';
+            content += '<div style="margin-bottom: 15px;"><strong style="color: #333;">📌 Existing Trips:</strong></div>';
+            content += '<div style="margin-bottom: 15px; max-height: 300px; overflow-y: auto;">';
             trips.forEach(trip => {
                 content += `
-                    <button onclick="travelPlanner.savePlaceToTrip(${place.id}, '${place.name}', '${trip.id}')" 
-                            style="display: block; width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
-                        ✈️ ${trip.name} (${trip.places.length} places)
+                    <button onclick="travelPlanner.savePlaceToTrip(${place.id}, '${place.name.replace(/'/g, "\\'")}', '${trip.id}')" 
+                            style="display: block; width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; background: #f8f9fa; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-align: left; font-size: 14px;">
+                        <span style="font-weight: bold;">✈️ ${trip.name}</span><br>
+                        <span style="color: #666; font-size: 12px;">${trip.places.length} places saved</span>
                     </button>
                 `;
             });
@@ -648,21 +655,28 @@ class TravelPlanner {
         }
 
         content += `
-            <div style="margin-bottom: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                <strong>Create New Trip:</strong>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                <strong style="color: #333; display: block; margin-bottom: 15px;">➕ Create New Trip:</strong>
+                <input type="text" id="new-trip-name" placeholder="e.g., Summer 2024, Beach Vacation" 
+                       style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+                <button onclick="travelPlanner.createAndSaveTrip(${place.id}, '${place.name.replace(/'/g, "\\'")}'); return false;" 
+                        style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s;"
+                        onmouseover="this.style.background='#218838'" onmouseout="this.style.background='#28a745'">
+                    <i class="fas fa-plus"></i> Create Trip & Save
+                </button>
             </div>
-            <input type="text" id="new-trip-name" placeholder="Enter trip name (e.g., Summer 2024)" 
-                   style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px;">
-            <button onclick="travelPlanner.createAndSaveTrip(${place.id}, '${place.name}')" 
-                    style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                <i class="fas fa-plus"></i> Create Trip & Save
-            </button>
         `;
 
         const modal = document.getElementById('detail-modal');
         const modalBody = document.getElementById('modal-body');
         modalBody.innerHTML = content;
         modal.style.display = 'flex';
+        
+        // Focus on input for better UX
+        setTimeout(() => {
+            const input = document.getElementById('new-trip-name');
+            if (input) input.focus();
+        }, 100);
     }
 
     /**
@@ -670,17 +684,24 @@ class TravelPlanner {
      */
     savePlaceToTrip(placeId, placeName, tripId) {
         const place = this.allResults.find(p => p.id === placeId);
-        if (!place) return;
-
-        const trip = this.favoriteTrips.find(t => t.id === tripId);
-        if (!trip) return;
-
-        // Check if already in trip
-        if (trip.places.some(p => p.id === placeId)) {
-            alert(`"${placeName}" is already in this trip!`);
+        if (!place) {
+            alert('Error: Place not found');
             return;
         }
 
+        const trip = this.favoriteTrips.find(t => t.id === tripId);
+        if (!trip) {
+            alert('Error: Trip not found');
+            return;
+        }
+
+        // Check if already in trip
+        if (trip.places.some(p => p.id === placeId)) {
+            alert(`"${placeName}" is already in the trip "${trip.name}"!`);
+            return;
+        }
+
+        // Add to trip
         trip.places.push({
             id: placeId,
             name: place.name,
@@ -688,13 +709,20 @@ class TravelPlanner {
             description: place.description,
             rating: place.rating,
             price: place.price,
+            image: place.image,
             addedDate: new Date().toLocaleDateString()
         });
 
         this.saveFavoriteTrips();
         this.displayFavorites();
-        alert(`Added "${placeName}" to "${trip.name}"!`);
-        document.getElementById('detail-modal').style.display = 'none';
+        
+        const successMsg = `✓ Added "${placeName}" to "${trip.name}"!`;
+        alert(successMsg);
+        console.log(successMsg);
+        
+        // Close modal
+        const modal = document.getElementById('detail-modal');
+        if (modal) modal.style.display = 'none';
     }
 
     /**
@@ -702,7 +730,7 @@ class TravelPlanner {
      */
     createAndSaveTrip(placeId, placeName) {
         const tripNameInput = document.getElementById('new-trip-name');
-        const tripName = tripNameInput.value.trim();
+        const tripName = tripNameInput?.value?.trim();
 
         if (!tripName) {
             alert('Please enter a trip name');
@@ -710,7 +738,10 @@ class TravelPlanner {
         }
 
         const place = this.allResults.find(p => p.id === placeId);
-        if (!place) return;
+        if (!place) {
+            alert('Error: Place not found');
+            return;
+        }
 
         const newTrip = {
             id: 'trip_' + Date.now(),
@@ -723,6 +754,7 @@ class TravelPlanner {
                 description: place.description,
                 rating: place.rating,
                 price: place.price,
+                image: place.image,
                 addedDate: new Date().toLocaleDateString()
             }]
         };
@@ -730,8 +762,14 @@ class TravelPlanner {
         this.favoriteTrips.push(newTrip);
         this.saveFavoriteTrips();
         this.displayFavorites();
-        alert(`Created "${tripName}" and added "${placeName}"!`);
-        document.getElementById('detail-modal').style.display = 'none';
+        
+        const successMsg = `✓ Created "${tripName}" and added "${placeName}"!`;
+        alert(successMsg);
+        console.log(successMsg);
+        
+        // Close modal
+        const modal = document.getElementById('detail-modal');
+        if (modal) modal.style.display = 'none';
     }
 
     /**

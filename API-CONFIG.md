@@ -4,66 +4,55 @@
  */
 
 // ========================================
-// GOOGLE MAPS API SETUP
+// LEAFLET MAPS SETUP (FREE - NO API KEY NEEDED)
 // ========================================
 
 /*
-STEP 1: Create a Google Cloud Project
-1. Navigate to https://console.cloud.google.com/
-2. Click on the project dropdown
-3. Click "NEW PROJECT"
-4. Enter "Travel Planner" as the project name
-5. Click "CREATE"
+LEAFLET MIGRATION FROM GOOGLE MAPS:
+The application now uses Leaflet with OpenStreetMap tiles instead of Google Maps.
+This eliminates the need for API keys and reduces costs!
 
-STEP 2: Enable Required APIs
-1. In the Cloud Console, go to "APIs & Services" > "Library"
-2. Search for and enable these APIs:
-   - Maps JavaScript API
-   - Places API
-   - Directions API
-   - Distance Matrix API
-   - Geocoding API (optional)
+FEATURES:
+✅ FREE to use - No API key required
+✅ OpenStreetMap data - Community-maintained map data
+✅ Lightweight library - Smaller bundle size than Google Maps
+✅ Responsive design - Works great on mobile and desktop
+✅ Open source - Customizable and transparent
 
-3. For each API:
-   - Click the API name
-   - Click "ENABLE"
-   - Wait for confirmation
+IMPLEMENTATION (Already included in index.html):
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
-STEP 3: Create API Key
-1. Go to "APIs & Services" > "Credentials"
-2. Click "CREATE CREDENTIALS"
-3. Choose "API Key"
-4. Copy the API key
+LEAFLET USAGE IN map.js:
+- L.map() - Initialize and display map
+- L.marker() - Add location markers
+- L.polyline() - Draw routes between locations
+- L.tileLayer() - Change map tile providers (OpenStreetMap, Stamen, etc.)
+- L.featureGroup() - Group markers together
+- L.latLngBounds() - Calculate map boundaries
 
-STEP 4: Restrict API Key (Recommended)
-1. In Credentials page, click on your API key
-2. Under "Application restrictions":
-   - Select "HTTP referrers (web sites)"
-   - Add your domain (e.g., localhost:8000, example.com)
-3. Under "API restrictions":
-   - Select "Restrict key"
-   - Select only the APIs you enabled
-4. Click "SAVE"
+TILE LAYER OPTIONS (All Free):
+1. OpenStreetMap (Default)
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 
-STEP 5: Enable Billing
-1. Go to "Billing" in Cloud Console
-2. Link a billing account
-3. Set up a budget alert (recommended)
+2. Stamen Terrain
+   L.tileLayer('http://tile.stamen.com/terrain/{z}/{x}/{y}.png')
 
-PRICING:
-- Maps: $7.00 per 1000 loads (after 28,000 free loads/month)
-- Places: $17.50 per 1000 requests (after 25,000 free/month)
-- Directions: $5.00 per 1000 requests (after 25,000 free/month)
+3. OpenStreetMap.BlackAndWhite
+   L.tileLayer('http://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png')
 
-IMPLEMENTATION:
-Add this to index.html:
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry"></script>
+GEOCODING (Address to Coordinates):
+Uses OpenStreetMap Nominatim API (free):
+https://nominatim.openstreetmap.org/search?format=json&q=ADDRESS
 
-In map.js, the app uses:
-- google.maps.Map for display
-- google.maps.Marker for locations
-- google.maps.DirectionsService for routes
-- google.maps.PlacesService for place info
+OPTIONAL EXTRAS:
+- Leaflet.heat: Add heatmap layers
+  <script src="https://unpkg.com/leaflet.heat"></script>
+
+- Leaflet Control Search: Add search to map
+- Leaflet Routing Machine: Show routes (uses free routing engines)
+
+NO CONFIGURATION NEEDED - Just use it!
 */
 
 // ========================================
@@ -128,18 +117,25 @@ API Endpoints:
 // ========================================
 
 const travelPlannerConfig = {
-  // Google Maps Configuration
-  googleMaps: {
-    apiKey: 'YOUR_GOOGLE_MAPS_API_KEY',
+  // Leaflet Maps Configuration (FREE - No API Key Needed!)
+  maps: {
+    // Default zoom level (0-19)
     defaultZoom: 13,
-    defaultCenter: { lat: 40.7128, lng: -74.0060 }, // New York
+    // Default center location [latitude, longitude]
+    defaultCenter: [40.7128, -74.0060], // New York
+    // Map options
     mapOptions: {
       zoomControl: true,
-      mapTypeControl: true,
-      streetViewControl: false,
-      fullscreenControl: true,
-      maxZoom: 20,
+      scrollWheelZoom: true,
+      doubleClickZoom: true,
+      maxZoom: 19,
       minZoom: 2
+    },
+    // Tile layer options (OpenStreetMap by default - FREE)
+    tileLayer: {
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19
     }
   },
 
@@ -193,17 +189,36 @@ const travelPlannerConfig = {
 // ========================================
 
 /*
-GOOGLE MAPS EXAMPLE:
-const map = new google.maps.Map(document.getElementById('map'), {
-  zoom: 10,
-  center: { lat: 40.7128, lng: -74.0060 }
-});
+LEAFLET MAP EXAMPLE:
+// Initialize map
+const map = L.map('map').setView([40.7128, -74.0060], 13);
 
-const marker = new google.maps.Marker({
-  position: { lat: 40.7128, lng: -74.0060 },
-  map: map,
-  title: 'New York'
-});
+// Add tile layer (OpenStreetMap - Free)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors',
+  maxZoom: 19
+}).addTo(map);
+
+// Add marker
+const marker = L.marker([40.7128, -74.0060]).addTo(map);
+marker.bindPopup('New York City');
+
+// Draw route between two points
+const polyline = L.polyline([[40.7128, -74.0060], [40.7580, -73.9855]], {
+  color: 'blue'
+}).addTo(map);
+
+// Fit map to bounds
+map.fitBounds(polyline.getBounds());
+
+GEOCODING EXAMPLE (Address to Coordinates):
+fetch('https://nominatim.openstreetmap.org/search?format=json&q=Paris')
+  .then(response => response.json())
+  .then(data => {
+    console.log('Latitude:', data[0].lat);
+    console.log('Longitude:', data[0].lon);
+  })
+  .catch(error => console.error('Error:', error));
 
 TRIPADVISOR EXAMPLE:
 fetch(`${config.tripAdvisor.baseUrl}/location/search?query=Paris&key=${config.tripAdvisor.apiKey}`)
