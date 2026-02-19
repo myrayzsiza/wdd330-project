@@ -546,14 +546,14 @@ class TravelPlanner {
                         <div class="price">${place.price}</div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-primary btn-sm" onclick="travelPlanner.viewDetails(${place.id})">
-                            <i class="fas fa-info-circle"></i> Details
+                        <button class="btn btn-primary btn-sm" onclick="travelPlanner.viewDetails(${place.id})" style="flex: 2;">
+                            <i class="fas fa-info-circle"></i> View Details
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="travelPlanner.toggleFavorite(${place.id}, '${place.name}')">
+                        <button class="btn btn-danger btn-sm" onclick="travelPlanner.addToFavorites(${place.id}, '${place.name.replace(/'/g, "\\'")}')">
                             <i class="fas fa-heart"></i> Save
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="travelPlanner.addToItinerary(${place.id}, '${place.name}')">
-                            <i class="fas fa-plus"></i> Itinerary
+                        <button class="btn btn-secondary btn-sm" onclick="travelPlanner.addToItinerary(${place.id}, '${place.name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-plus"></i>
                         </button>
                     </div>
                 </div>
@@ -570,33 +570,96 @@ class TravelPlanner {
 
         const modal = document.getElementById('detail-modal');
         const modalBody = document.getElementById('modal-body');
+        const isFavorited = this.favorites.some(f => f.id === placeId);
+
+        // Build services HTML if available
+        let servicesHTML = '';
+        if (place.services && place.services.length > 0) {
+            servicesHTML = `
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #333; font-size: 18px; margin: 0 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #0056b3;">
+                        <i class="fas fa-star"></i> Amenities & Services
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        ${place.services.map(service => `
+                            <div style="padding: 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #0056b3;">
+                                <div style="font-size: 20px; margin-bottom: 5px;">${service.icon}</div>
+                                <div style="font-weight: bold; color: #333; margin-bottom: 3px;">${service.name}</div>
+                                <div style="color: #666; font-size: 13px;">${service.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
 
         modalBody.innerHTML = `
-            <div style="text-align: center; margin-bottom: 20px; font-size: 4rem;">
-                ${place.image}
-            </div>
-            <h3>${place.name}</h3>
-            <div class="rating" style="margin-bottom: 15px;">
-                <span>⭐</span>
-                <span class="rating-value">${place.rating}</span>
-                <span>(${place.reviews} reviews)</span>
-            </div>
-            <div class="price" style="margin-bottom: 20px;">${place.price}</div>
-            <p style="margin-bottom: 20px; color: #495057;">${place.description}</p>
-            <div style="margin-bottom: 20px; padding: 15px; background-color: #f0f7f3; border-radius: 4px;">
-                <h4 style="color: #0056b3; margin-bottom: 10px;">About this place</h4>
-                <p>This is a ${place.type} in ${this.currentLocation}. It's highly rated by visitors and offers a unique experience.</p>
-            </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="travelPlanner.toggleFavorite(${placeId}, '${place.name}')">
-                    <i class="fas fa-heart"></i> Save to Trip
-                </button>
-                <button class="btn btn-success" onclick="travelPlanner.addToItinerary(${placeId}, '${place.name}')">
-                    <i class="fas fa-calendar"></i> Add to Itinerary
-                </button>
-                <button class="btn btn-secondary" onclick="document.getElementById('detail-modal').style.display='none'">
-                    Close
-                </button>
+            <div style="max-height: 80vh; overflow-y: auto; padding-right: 10px;">
+                <!-- Header with Image -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="font-size: 5rem; margin-bottom: 15px;">${place.image}</div>
+                    <span style="display: inline-block; background: #0056b3; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">
+                        ${place.type}
+                    </span>
+                </div>
+
+                <!-- Title and Rating -->
+                <h3 style="font-size: 28px; margin: 20px 0 10px 0; color: #333;">${place.name}</h3>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 20px;">⭐</span>
+                        <span style="font-size: 20px; font-weight: bold; color: #333;">${place.rating}</span>
+                        <span style="color: #666; font-size: 14px;">(${place.reviews} reviews)</span>
+                    </div>
+                    <div style="font-size: 18px; font-weight: bold; color: #28a745;">${place.price}</div>
+                </div>
+
+                <!-- Description -->
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #333; font-size: 18px; margin: 0 0 10px 0;">About</h4>
+                    <p style="margin: 0; color: #555; line-height: 1.6; font-size: 15px;">${place.description}</p>
+                </div>
+
+                <!-- Key Details -->
+                <div style="margin-bottom: 25px; padding: 15px; background: linear-gradient(135deg, #f0f7f3 0%, #e7f3ff 100%); border-radius: 8px;">
+                    <h4 style="color: #0056b3; margin: 0 0 12px 0; font-size: 16px;">
+                        <i class="fas fa-info-circle"></i> Quick Info
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px;">
+                        <div>
+                            <div style="color: #666; margin-bottom: 3px;">Type:</div>
+                            <div style="font-weight: bold; color: #333;">${place.type.charAt(0).toUpperCase() + place.type.slice(1)}</div>
+                        </div>
+                        <div>
+                            <div style="color: #666; margin-bottom: 3px;">Location:</div>
+                            <div style="font-weight: bold; color: #333;">${this.currentLocation}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services/Amenities -->
+                ${servicesHTML}
+
+                <!-- Action Buttons -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee;">
+                    <button class="btn btn-primary" onclick="travelPlanner.addToFavorites(${placeId}, '${place.name.replace(/'/g, "\\'")}');" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px;">
+                        <i class="fas fa-heart"></i> 
+                        <span>${isFavorited ? 'Saved ✓' : 'Save'}</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="travelPlanner.showSaveToTripModal(travelPlanner.allResults[travelPlanner.allResults.findIndex(p => p.id === ${placeId})]);" style="display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px;">
+                        <i class="fas fa-folder-plus"></i> Save to Trip
+                    </button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-success" onclick="travelPlanner.addToItinerary(${placeId}, '${place.name.replace(/'/g, "\\'")}');" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px;">
+                        <i class="fas fa-calendar"></i> Add to Itinerary
+                    </button>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="btn btn-secondary" onclick="document.getElementById('detail-modal').style.display='none';" style="width: 100%; padding: 12px;">
+                        Close
+                    </button>
+                </div>
             </div>
         `;
 
@@ -622,6 +685,48 @@ class TravelPlanner {
             console.log(successMsg);
             this.saveFavorites();
             this.displayFavorites();
+        }
+    }
+
+    /**
+     * Add place directly to favorites
+     */
+    addToFavorites(placeId, placeName) {
+        const place = this.allResults.find(p => p.id === placeId);
+        if (!place) return;
+
+        const index = this.favorites.findIndex(f => f.id === placeId);
+        
+        if (index === -1) {
+            // Add to favorites
+            this.favorites.push({
+                id: place.id,
+                name: place.name,
+                type: place.type,
+                description: place.description,
+                rating: place.rating,
+                reviews: place.reviews,
+                image: place.image,
+                price: place.price,
+                location: this.currentLocation,
+                savedDate: new Date().toLocaleDateString()
+            });
+            alert(`✓ "${place.name}" saved to favorites!`);
+            console.log(`Added to favorites: ${place.name}`);
+        } else {
+            // Remove from favorites
+            this.favorites.splice(index, 1);
+            alert(`✓ Removed "${place.name}" from favorites!`);
+            console.log(`Removed from favorites: ${place.name}`);
+        }
+        
+        this.saveFavorites();
+        this.displayFavorites();
+        
+        // Update button state in modal if it's visible
+        const modal = document.getElementById('detail-modal');
+        if (modal && modal.style.display === 'flex') {
+            this.viewDetails(placeId);
         }
     }
 
@@ -912,7 +1017,8 @@ class TravelPlanner {
         const favoritesList = document.getElementById('favorites-list');
         const noFavorites = document.getElementById('no-favorites');
 
-        if (this.favoriteTrips.length === 0) {
+        // Check if there are any favorites (simple favorites or trips)
+        if (this.favorites.length === 0 && this.favoriteTrips.length === 0) {
             favoritesList.innerHTML = '';
             noFavorites.style.display = 'block';
             return;
@@ -920,36 +1026,91 @@ class TravelPlanner {
 
         noFavorites.style.display = 'none';
 
-        const tripsHTML = this.favoriteTrips.map(trip => `
-            <div style="margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <div>
-                        <h3 style="margin: 0 0 5px 0;">✈️ ${trip.name}</h3>
-                        <p style="margin: 0; color: #666; font-size: 0.9rem;">Created: ${trip.createdDate} • ${trip.places.length} places</p>
-                    </div>
-                    <button onclick="travelPlanner.deleteTrip('${trip.id}')" 
-                            style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-                <div style="border-top: 1px solid #ddd; padding-top: 15px;">
-                    ${trip.places.map((place, idx) => `
-                        <div style="padding: 12px; background: white; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: bold;">${place.name}</div>
-                                <div style="color: #666; font-size: 0.9rem;">${place.type} • Rating: ${place.rating} ⭐ • ${place.price}</div>
+        let content = '';
+
+        // Display simple favorites section
+        if (this.favorites.length > 0) {
+            content += `
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #333; font-size: 22px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #dc3545;">
+                        <i class="fas fa-heart" style="color: #dc3545;"></i> My Favorite Places
+                    </h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        ${this.favorites.map(place => `
+                            <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s; hover:box-shadow: 0 4px 16px rgba(220, 53, 69, 0.2);">
+                                <div style="font-size: 3rem; background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); padding: 20px; text-align: center;">
+                                    ${place.image}
+                                </div>
+                                <div style="padding: 15px;">
+                                    <h4 style="margin: 0 0 8px 0; color: #333; font-size: 16px;">${place.name}</h4>
+                                    <div style="color: #666; font-size: 13px; margin-bottom: 10px;">
+                                        <div style="margin-bottom: 5px;">
+                                            <span style="display: inline-block; background: #f0f0f0; padding: 3px 8px; border-radius: 12px; margin-right: 5px;">
+                                                ${place.type}
+                                            </span>
+                                            <span style="color: #ffc107;">⭐ ${place.rating}</span>
+                                        </div>
+                                        <div style="color: #28a745; font-weight: bold;">${place.price}</div>
+                                        <div style="color: #999; font-size: 12px; margin-top: 5px;">Saved: ${place.savedDate}</div>
+                                    </div>
+                                    <p style="margin: 0 0 12px 0; color: #666; font-size: 13px; line-height: 1.4;">${place.description}</p>
+                                    <div style="display: flex; gap: 8px;">
+                                        <button onclick="travelPlanner.viewDetails(${place.id})" style="flex: 1; padding: 8px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
+                                        <button onclick="travelPlanner.addToFavorites(${place.id}, '${place.name.replace(/'/g, "\\'")}');" style="flex: 1; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">
+                                            <i class="fas fa-heart"></i> Remove
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <button onclick="travelPlanner.removePlaceFromTrip('${trip.id}', ${place.id})" 
-                                    style="background: #f8f9fa; border: 1px solid #ddd; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
-                                <i class="fas fa-times"></i>
-                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Display trips section
+        if (this.favoriteTrips.length > 0) {
+            content += `
+                <div style="margin-top: 30px;">
+                    <h3 style="color: #333; font-size: 22px; margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 3px solid #0056b3;">
+                        <i class="fas fa-map" style="color: #0056b3;"></i> My Trips
+                    </h3>
+                    ${this.favoriteTrips.map(trip => `
+                        <div style="margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #333; font-size: 18px;">✈️ ${trip.name}</h4>
+                                    <p style="margin: 0; color: #666; font-size: 0.9rem;">Created: ${trip.createdDate} • ${trip.places.length} places</p>
+                                </div>
+                                <button onclick="travelPlanner.deleteTrip('${trip.id}')" 
+                                        style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; transition: background 0.2s;"
+                                        onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                            <div style="border-top: 1px solid #ddd; padding-top: 15px;">
+                                ${trip.places.map((place, idx) => `
+                                    <div style="padding: 12px; background: white; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: bold;">${place.name}</div>
+                                            <div style="color: #666; font-size: 0.9rem;">${place.type} • Rating: ${place.rating} ⭐ • ${place.price}</div>
+                                        </div>
+                                        <button onclick="travelPlanner.removePlaceFromTrip('${trip.id}', ${place.id})" 
+                                                style="background: #f8f9fa; border: 1px solid #ddd; padding: 6px 10px; border-radius: 4px; cursor: pointer;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     `).join('')}
                 </div>
-            </div>
-        `).join('');
+            `;
+        }
 
-        favoritesList.innerHTML = tripsHTML;
+        favoritesList.innerHTML = content;
     }
 
     /**
