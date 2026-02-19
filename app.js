@@ -243,7 +243,13 @@ class TravelPlanner {
                 rating: 4.6,
                 reviews: 324,
                 image: '🏛️',
-                price: 'Free - $15'
+                price: 'Free - $15',
+                services: [
+                    { name: 'Guided Tours', icon: '👨‍🏫', description: 'Expert-led tours available' },
+                    { name: 'Gift Shop', icon: '🛍️', description: 'Souvenirs and memorabilia' },
+                    { name: 'Cafe', icon: '☕', description: 'Refreshments available' },
+                    { name: 'Wheelchair Access', icon: '♿', description: 'Accessible for all visitors' }
+                ]
             },
             {
                 id: 2,
@@ -253,7 +259,13 @@ class TravelPlanner {
                 rating: 4.8,
                 reviews: 892,
                 image: '🌳',
-                price: 'Free'
+                price: 'Free',
+                services: [
+                    { name: 'Hiking Trails', icon: '🥾', description: 'Multiple trail options' },
+                    { name: 'Picnic Areas', icon: '🧺', description: 'Designated picnic zones' },
+                    { name: 'Bike Rentals', icon: '🚴', description: 'Rentals available' },
+                    { name: 'Restrooms', icon: '🚻', description: 'Clean facilities' }
+                ]
             },
             {
                 id: 3,
@@ -263,7 +275,13 @@ class TravelPlanner {
                 rating: 4.5,
                 reviews: 567,
                 image: '🏰',
-                price: 'Free'
+                price: 'Free',
+                services: [
+                    { name: 'Walking Tours', icon: '🚶', description: 'Guided history walks' },
+                    { name: 'Photography Spots', icon: '📷', description: 'Scenic viewpoints' },
+                    { name: 'Local Shops', icon: '🏪', description: 'Artisan boutiques' },
+                    { name: 'Historical Info', icon: 'ℹ️', description: 'Information centers' }
+                ]
             },
             {
                 id: 4,
@@ -273,7 +291,13 @@ class TravelPlanner {
                 rating: 4.7,
                 reviews: 445,
                 image: '🍽️',
-                price: '$25 - $50'
+                price: '$25 - $50',
+                services: [
+                    { name: 'Dine-In', icon: '🪑', description: 'Indoor seating' },
+                    { name: 'Takeout', icon: '🥡', description: 'Quick takeaway' },
+                    { name: 'Delivery', icon: '🚚', description: 'Food delivery available' },
+                    { name: 'Vegetarian Options', icon: '🥗', description: 'Healthy choices' }
+                ]
             },
             {
                 id: 5,
@@ -283,7 +307,13 @@ class TravelPlanner {
                 rating: 4.9,
                 reviews: 612,
                 image: '🏨',
-                price: '$200 - $350/night'
+                price: '$200 - $350/night',
+                services: [
+                    { name: 'Free WiFi', icon: '📡', description: 'High-speed internet' },
+                    { name: 'Spa', icon: '💆', description: 'Wellness treatments' },
+                    { name: 'Concierge', icon: '🎩', description: '24/7 assistance' },
+                    { name: 'Fitness Center', icon: '💪', description: 'Gym facilities' }
+                ]
             },
             {
                 id: 6,
@@ -293,7 +323,13 @@ class TravelPlanner {
                 rating: 4.4,
                 reviews: 289,
                 image: '🏩',
-                price: '$80 - $150/night'
+                price: '$80 - $150/night',
+                services: [
+                    { name: 'Free Breakfast', icon: '🍳', description: 'Complimentary morning meal' },
+                    { name: 'Parking', icon: '🅿️', description: 'Free parking available' },
+                    { name: 'Pet Friendly', icon: '🐾', description: 'Pets welcome' },
+                    { name: 'Airport Shuttle', icon: '🚐', description: 'Transportation service' }
+                ]
             },
             {
                 id: 7,
@@ -303,7 +339,13 @@ class TravelPlanner {
                 rating: 4.3,
                 reviews: 198,
                 image: '🎨',
-                price: '$10 - $12'
+                price: '$10 - $12',
+                services: [
+                    { name: 'Audio Guides', icon: '🎧', description: 'Multi-language support' },
+                    { name: 'Art Classes', icon: '🎬', description: 'Workshops available' },
+                    { name: 'Photography', icon: '📸', description: 'Photo-friendly zones' },
+                    { name: 'Events', icon: '🎪', description: 'Special exhibitions' }
+                ]
             },
             {
                 id: 8,
@@ -313,7 +355,13 @@ class TravelPlanner {
                 rating: 4.6,
                 reviews: 534,
                 image: '🛒',
-                price: 'Free'
+                price: 'Free',
+                services: [
+                    { name: 'Fresh Produce', icon: '🥕', description: 'Local farm produce' },
+                    { name: 'Artisan Goods', icon: '🧵', description: 'Handmade items' },
+                    { name: 'Food Stalls', icon: '🌮', description: 'Street food vendors' },
+                    { name: 'Live Music', icon: '🎵', description: 'Entertainment' }
+                ]
             }
         ];
 
