@@ -200,9 +200,11 @@ class TravelPlanner {
                 travelGuide.displayGuide(query);
             }
 
-            // Initialize map
+            // Initialize map with a slight delay to ensure DOM is updated
             if (typeof initMap === 'function') {
-                initMap(query);
+                setTimeout(() => {
+                    initMap(query);
+                }, 50);
             }
         } catch (error) {
             this.showError(`Error: ${error.message}`);
@@ -1067,6 +1069,12 @@ class TravelPlanner {
         const mapSection = document.getElementById('map-section');
         if (mapSection) {
             mapSection.style.display = 'block';
+            // Trigger map resize after display change
+            setTimeout(() => {
+                if (typeof map !== 'undefined' && map) {
+                    map.invalidateSize();
+                }
+            }, 100);
         }
     }
 
